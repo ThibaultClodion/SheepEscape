@@ -19,10 +19,10 @@ public:
 	ABaseCharacter();
 	virtual void Tick(float DeltaTime) override;
 
-	/** Inputs*/
+	/** Inputs */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void Move(const FInputActionValue& Value);
-	void Action(const FInputActionValue& Value);
+	virtual void Action(const FInputActionValue& Value);
 
 protected:
 	virtual void BeginPlay() override;

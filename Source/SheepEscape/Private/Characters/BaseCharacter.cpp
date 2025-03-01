@@ -59,10 +59,7 @@ void ABaseCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
-void ABaseCharacter::Action(const FInputActionValue& Value)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Action"));
-}
+void ABaseCharacter::Action(const FInputActionValue& Value){}
 
 void ABaseCharacter::InitializeMappingContext(APlayerController* PlayerController)
 {
