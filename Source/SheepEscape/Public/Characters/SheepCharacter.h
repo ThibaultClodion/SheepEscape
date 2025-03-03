@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Characters/BaseCharacter.h"
+#include "Characters/BasePlayer.h"
 #include "SheepCharacter.generated.h"
 
+
 UCLASS()
-class SHEEPESCAPE_API ASheepCharacter : public ABaseCharacter
+class SHEEPESCAPE_API ASheepCharacter : public ABasePlayer
 {
 	GENERATED_BODY()
 	
