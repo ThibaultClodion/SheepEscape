@@ -14,3 +14,8 @@ void ASheepCharacter::Action(const FInputActionValue& Value)
 {
 	UE_LOG(LogTemp, Warning, TEXT("HeadButt"));
 }
+
+void ASheepCharacter::Eliminate()
+{
+	UE_LOG(LogTemp, Warning, TEXT("SheepCharacter Eliminated !"));
+}

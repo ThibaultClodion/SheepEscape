@@ -14,3 +14,8 @@ void AShepherdCharacter::Action(const FInputActionValue& Value)
 {
 	UE_LOG(LogTemp, Warning, TEXT("CrookHit"));
 }
+
+void AShepherdCharacter::Eliminate()
+{
+	UE_LOG(LogTemp, Warning, TEXT("ShepherdCharacter Eliminated !"));
+}
