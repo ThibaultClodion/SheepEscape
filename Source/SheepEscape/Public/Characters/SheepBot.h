@@ -45,6 +45,8 @@ protected:
 private:
 
 	FVector Cohesion();
+	FVector Separation();
+	void MoveToPosition(FVector& DesiredPosition);
 
 	UPROPERTY()
 	TArray<AActor*> SheepInVisualRange;

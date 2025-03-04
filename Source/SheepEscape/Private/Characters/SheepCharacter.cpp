@@ -7,7 +7,7 @@
 ASheepCharacter::ASheepCharacter()
 {
 	//Test : minus speed on sheep
-	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 }
 
 void ASheepCharacter::Action(const FInputActionValue& Value)
