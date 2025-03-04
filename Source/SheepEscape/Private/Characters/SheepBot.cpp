@@ -2,11 +2,15 @@
 
 
 #include "Characters/SheepBot.h"
+#include "AIController.h"
 #include "Characters/SheepCharacter.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ASheepBot::ASheepBot()
 {
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+
 	VisualSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Visual Sphere"));
 	VisualSphere->SetupAttachment(GetRootComponent());
 
@@ -24,11 +28,11 @@ void ASheepBot::BeginPlay()
 
 void ASheepBot::Tick(float DeltaTime)
 {
-	FVector DesiredPosition = Cohesion();
+	FVector ForceInput = Cohesion();
 
 	if (BotController)
 	{
-		/*Move with navmesh (like enemy on Aluna)*/
+		AddMovementInput(ForceInput.GetSafeNormal());
 	}
 }
 
@@ -43,12 +47,12 @@ FVector ASheepBot::Cohesion()
 
 	for (int i = 0; i < SheepInVisualRange.Num(); i++)
 	{
-		HerdCenter = SheepInVisualRange[i]->GetActorLocation();
+		HerdCenter += SheepInVisualRange[i]->GetActorLocation();
 	}
 
 	HerdCenter /= SheepInVisualRange.Num();
 
-	return HerdCenter;
+	return HerdCenter - GetActorLocation();
 }
 
 void ASheepBot::InitializeSphereOverlaps()
