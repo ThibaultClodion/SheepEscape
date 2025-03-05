@@ -31,7 +31,7 @@ void ASheepBot::BeginPlay()
 
 void ASheepBot::Tick(float DeltaTime)
 {
-
+	Super::Tick(DeltaTime);
 }
 
 void ASheepBot::Eliminate()
