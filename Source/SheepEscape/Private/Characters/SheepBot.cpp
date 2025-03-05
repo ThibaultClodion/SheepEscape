@@ -13,46 +13,30 @@ ASheepBot::ASheepBot()
 
 	VisualSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Visual Sphere"));
 	VisualSphere->SetupAttachment(GetRootComponent());
+	VisualSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	VisualSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 
 	ProtectedSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Protected Sphere"));
 	ProtectedSphere->SetupAttachment(GetRootComponent());
+	ProtectedSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	ProtectedSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 }
 
 void ASheepBot::BeginPlay()
 {
 	Super::BeginPlay();
 
-	BotController = Cast<AAIController>(GetController());
 	InitializeSphereOverlaps();
 }
 
 void ASheepBot::Tick(float DeltaTime)
 {
-	FVector ForceInput = Cohesion();
 
-	if (BotController)
-	{
-		AddMovementInput(ForceInput.GetSafeNormal());
-	}
 }
 
 void ASheepBot::Eliminate()
 {
 	UE_LOG(LogTemp, Warning, TEXT("SheepBot Eliminated !"));
-}
-
-FVector ASheepBot::Cohesion()
-{
-	FVector HerdCenter = FVector(0, 0, 0);
-
-	for (int i = 0; i < SheepInVisualRange.Num(); i++)
-	{
-		HerdCenter += SheepInVisualRange[i]->GetActorLocation();
-	}
-
-	HerdCenter /= SheepInVisualRange.Num();
-
-	return HerdCenter - GetActorLocation();
 }
 
 void ASheepBot::InitializeSphereOverlaps()
@@ -65,8 +49,6 @@ void ASheepBot::InitializeSphereOverlaps()
 
 void ASheepBot::OnVisualSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("On Visual Entering : %s"), *OtherActor->GetName());
-
 	if (OtherActor && (Cast<ASheepBot>(OtherActor) || Cast<ASheepCharacter>(OtherActor)))
 	{
 		SheepInVisualRange.Add(OtherActor);
@@ -75,8 +57,6 @@ void ASheepBot::OnVisualSphereOverlap(UPrimitiveComponent* OverlappedComponent, 
 
 void ASheepBot::OnVisualSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	UE_LOG(LogTemp, Warning, TEXT("On Visual Quitting : %s"), *OtherActor->GetName());
-
 	if (OtherActor && (Cast<ASheepBot>(OtherActor) || Cast<ASheepCharacter>(OtherActor)))
 	{
 		SheepInVisualRange.Remove(OtherActor);
@@ -85,8 +65,6 @@ void ASheepBot::OnVisualSphereEndOverlap(UPrimitiveComponent* OverlappedComponen
 
 void ASheepBot::OnProtectedSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("On Protected Entering : %s"), *OtherActor->GetName());
-
 	if (OtherActor && (Cast<ASheepBot>(OtherActor) || Cast<ASheepCharacter>(OtherActor)))
 	{
 		SheepInProtectedRange.Add(OtherActor);
@@ -95,8 +73,6 @@ void ASheepBot::OnProtectedSphereOverlap(UPrimitiveComponent* OverlappedComponen
 
 void ASheepBot::OnProtectedSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	UE_LOG(LogTemp, Warning, TEXT("On Protected Quitting : %s"), *OtherActor->GetName());
-
 	if (OtherActor && (Cast<ASheepBot>(OtherActor) || Cast<ASheepCharacter>(OtherActor)))
 	{
 		SheepInProtectedRange.Remove(OtherActor);

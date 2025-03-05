@@ -22,9 +22,6 @@ protected:
 
 	virtual void Eliminate() override;
 
-	UPROPERTY()
-	class AAIController* BotController;
-
 	/** Overlaps */
 	void InitializeSphereOverlaps();
 	UFUNCTION()
@@ -41,10 +38,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* ProtectedSphere;
 
-
 private:
-
-	FVector Cohesion();
 
 	UPROPERTY()
 	TArray<AActor*> SheepInVisualRange;
