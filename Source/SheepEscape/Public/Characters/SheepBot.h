@@ -33,6 +33,7 @@ protected:
 	UFUNCTION()
 	virtual void OnProtectedSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	/** Boids */
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* VisualSphere;
 	UPROPERTY(VisibleAnywhere)
@@ -40,9 +41,19 @@ protected:
 
 private:
 
+	/** Boids */
+	FVector Cohesion();
+	FVector Separation();
+
 	UPROPERTY()
 	TArray<AActor*> SheepInVisualRange;
+	float VisualSphereRadius = 500.f;
 	UPROPERTY()
 	TArray<AActor*> SheepInProtectedRange;
+	float ProtectedSphereRadius = 100.f;
+
+	void InitializeBoidParameters();
+	float CohesionFactor;
+	float SeparationFactor;
 	
 };

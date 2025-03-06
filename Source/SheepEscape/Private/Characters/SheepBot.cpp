@@ -3,6 +3,7 @@
 
 #include "Characters/SheepBot.h"
 #include "AIController.h"
+#include "Components/CapsuleComponent.h"
 #include "Characters/SheepCharacter.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -15,11 +16,13 @@ ASheepBot::ASheepBot()
 	VisualSphere->SetupAttachment(GetRootComponent());
 	VisualSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	VisualSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	VisualSphere->SetSphereRadius(VisualSphereRadius);
 
 	ProtectedSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Protected Sphere"));
 	ProtectedSphere->SetupAttachment(GetRootComponent());
 	ProtectedSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	ProtectedSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	ProtectedSphere->SetSphereRadius(ProtectedSphereRadius);
 }
 
 void ASheepBot::BeginPlay()
@@ -27,16 +30,68 @@ void ASheepBot::BeginPlay()
 	Super::BeginPlay();
 
 	InitializeSphereOverlaps();
+	InitializeBoidParameters();
 }
 
 void ASheepBot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	FVector MoveInput = Separation();
+
+	if (MoveInput.IsNearlyZero())
+	{
+		//TODO : NoMoveBehavior
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("x : %lf, y : %lf, z : %lf"), MoveInput.X, MoveInput.Y, MoveInput.Z);
+		AddMovementInput(MoveInput);
+	}
 }
 
 void ASheepBot::Eliminate()
 {
 	UE_LOG(LogTemp, Warning, TEXT("SheepBot Eliminated !"));
+}
+
+FVector ASheepBot::Cohesion()
+{
+	if (SheepInVisualRange.Num() == 0) return FVector::ZeroVector;
+
+	FVector HerdCenter = FVector::ZeroVector;
+	for (AActor* Sheep : SheepInVisualRange)
+	{
+		HerdCenter += Sheep->GetActorLocation();
+	}
+
+	HerdCenter /= SheepInVisualRange.Num();
+
+	return (HerdCenter - GetActorLocation()) * CohesionFactor;
+}
+
+FVector ASheepBot::Separation()
+{
+	if (SheepInProtectedRange.Num() == 0) return FVector::ZeroVector;
+
+	FVector AvoidLocation = FVector::ZeroVector;
+	for (AActor* Sheep : SheepInProtectedRange)
+	{
+		AvoidLocation += GetActorLocation() - Sheep->GetActorLocation();
+	}
+
+	AvoidLocation /= SheepInProtectedRange.Num();
+
+	return AvoidLocation * SeparationFactor;
+}
+
+void ASheepBot::InitializeBoidParameters()
+{
+	//If HerdCenter is deeper, sheep goes faster
+	CohesionFactor = 2 / VisualSphereRadius;
+
+	//Temp
+	SeparationFactor = 1.5f / ProtectedSphereRadius;
 }
 
 void ASheepBot::InitializeSphereOverlaps()
