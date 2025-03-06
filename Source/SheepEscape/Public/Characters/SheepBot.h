@@ -22,7 +22,7 @@ protected:
 
 	virtual void Eliminate() override;
 
-	/** Sphere Overlap */
+	/** Boid Visual Sphere */
 	void InitializeSphereOverlaps();
 
 	UFUNCTION()
@@ -30,27 +30,16 @@ protected:
 	UFUNCTION()
 	virtual void OnVisualSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	/** Boids */
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* VisualSphere;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Boids")
-	float CohesionFactor;
-	UPROPERTY(EditDefaultsOnly, Category = "Boids")
-	float AlignmentFactor;
-	UPROPERTY(EditDefaultsOnly, Category = "Boids")
-	float RandomNoiseFactor;
-
 private:
 
-	/** Boids */
-	FVector Cohesion();
-	FVector Alignment();
-
+	/** Boid Visual Sphere */
 	void AddingAlreadyOverlappingSheeps();
 	void AddSheepInVisualRange(AActor*& OtherActor);
 	void RemoveSheepInVisualRange(AActor*& OtherActor);
-	UPROPERTY()
+
 	TArray<ABaseCharacter*> SheepInVisualRange;
 	float VisualSphereRadius = 750.f;
 };

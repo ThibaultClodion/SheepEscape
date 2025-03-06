@@ -28,17 +28,10 @@ void ABasePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 void ABasePlayer::Move(const FInputActionValue& Value)
 {
 	const FVector2D MovementValue = Value.Get<FVector2D>();
-	MoveInput = FVector(MovementValue.X, MovementValue.Y, 0.f);
 
 	if (Controller)
 	{
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
-
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(ForwardDirection, MoveInput.X);
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		AddMovementInput(RightDirection, MoveInput.Y);
+		AddMovementInput(FVector(MovementValue.X, MovementValue.Y, 0.f));
 	}
 }
 

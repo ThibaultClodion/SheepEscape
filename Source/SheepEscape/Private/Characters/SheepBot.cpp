@@ -29,21 +29,6 @@ void ASheepBot::BeginPlay()
 void ASheepBot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	FVector BoidInput = Cohesion() + Alignment();
-
-	if (BoidInput.Size() > 1.f)
-	{
-		BoidInput = BoidInput.GetSafeNormal();
-	}
-
-	MoveInput = BoidInput;
-
-	if(!MoveInput.IsNearlyZero())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("x : %lf, y : %lf, z : %lf"), MoveInput.X, MoveInput.Y, MoveInput.Z);
-		AddMovementInput(MoveInput);
-	}
 }
 
 void ASheepBot::Eliminate()
@@ -51,35 +36,6 @@ void ASheepBot::Eliminate()
 	UE_LOG(LogTemp, Warning, TEXT("SheepBot Eliminated !"));
 }
 
-FVector ASheepBot::Cohesion()
-{
-	if (SheepInVisualRange.Num() == 0) return FVector::ZeroVector;
-
-	FVector HerdCenter = FVector::ZeroVector;
-	for (ABaseCharacter* Sheep : SheepInVisualRange)
-	{
-		HerdCenter += Sheep->GetActorLocation();
-	}
-
-	HerdCenter /= SheepInVisualRange.Num();
-
-	return (HerdCenter - GetActorLocation()).GetSafeNormal() * CohesionFactor;
-}
-
-FVector ASheepBot::Alignment()
-{
-	if (SheepInVisualRange.Num() == 0) return FVector::ZeroVector;
-
-	FVector AverageInput = FVector::ZeroVector;
-	for (ABaseCharacter* Sheep : SheepInVisualRange)
-	{
-		AverageInput += Sheep->MoveInput;
-	}
-
-	AverageInput /= SheepInVisualRange.Num();
-
-	return AverageInput * AlignmentFactor;
-}
 
 void ASheepBot::InitializeSphereOverlaps()
 {
