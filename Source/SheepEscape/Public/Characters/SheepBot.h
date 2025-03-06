@@ -39,21 +39,24 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* ProtectedSphere;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Boids")
+	float CohesionFactor;
+	UPROPERTY(EditDefaultsOnly, Category = "Boids")
+	float SeparationFactor;
+	UPROPERTY(EditDefaultsOnly, Category = "Boids")
+	float AlignmentFactor;
+
 private:
 
 	/** Boids */
 	FVector Cohesion();
 	FVector Separation();
+	FVector Alignment();
 
 	UPROPERTY()
 	TArray<AActor*> SheepInVisualRange;
-	float VisualSphereRadius = 500.f;
+	float VisualSphereRadius = 750.f;
 	UPROPERTY()
 	TArray<AActor*> SheepInProtectedRange;
-	float ProtectedSphereRadius = 100.f;
-
-	void InitializeBoidParameters();
-	float CohesionFactor;
-	float SeparationFactor;
-	
+	float ProtectedSphereRadius = 200.f;
 };

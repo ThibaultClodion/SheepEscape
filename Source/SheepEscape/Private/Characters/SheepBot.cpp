@@ -30,14 +30,13 @@ void ASheepBot::BeginPlay()
 	Super::BeginPlay();
 
 	InitializeSphereOverlaps();
-	InitializeBoidParameters();
 }
 
 void ASheepBot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	FVector MoveInput = Separation();
+	FVector MoveInput = Cohesion() + Separation() + Alignment();
 
 	if (MoveInput.IsNearlyZero())
 	{
@@ -85,13 +84,19 @@ FVector ASheepBot::Separation()
 	return AvoidLocation * SeparationFactor;
 }
 
-void ASheepBot::InitializeBoidParameters()
+FVector ASheepBot::Alignment()
 {
-	//If HerdCenter is deeper, sheep goes faster
-	CohesionFactor = 2 / VisualSphereRadius;
+	if (SheepInVisualRange.Num() == 0) return FVector::ZeroVector;
 
-	//Temp
-	SeparationFactor = 1.5f / ProtectedSphereRadius;
+	FVector AverageSpeed = FVector::ZeroVector;
+	for (AActor* Sheep : SheepInVisualRange)
+	{
+		AverageSpeed += Sheep->GetVelocity();
+	}
+
+	AverageSpeed /= SheepInVisualRange.Num();
+
+	return (AverageSpeed - GetVelocity()) * AlignmentFactor;
 }
 
 void ASheepBot::InitializeSphereOverlaps()
