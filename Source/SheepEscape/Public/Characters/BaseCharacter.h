@@ -17,6 +17,8 @@ public:
 	ABaseCharacter();
 	virtual void Tick(float DeltaTime) override;
 
+	FVector MoveInput;
+
 protected:
 	virtual void BeginPlay() override;
 

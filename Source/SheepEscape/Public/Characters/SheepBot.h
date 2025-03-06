@@ -22,41 +22,35 @@ protected:
 
 	virtual void Eliminate() override;
 
-	/** Overlaps */
+	/** Sphere Overlap */
 	void InitializeSphereOverlaps();
+
 	UFUNCTION()
 	virtual void OnVisualSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	virtual void OnVisualSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	UFUNCTION()
-	virtual void OnProtectedSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-	virtual void OnProtectedSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	/** Boids */
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* VisualSphere;
-	UPROPERTY(VisibleAnywhere)
-	USphereComponent* ProtectedSphere;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Boids")
 	float CohesionFactor;
 	UPROPERTY(EditDefaultsOnly, Category = "Boids")
-	float SeparationFactor;
-	UPROPERTY(EditDefaultsOnly, Category = "Boids")
 	float AlignmentFactor;
+	UPROPERTY(EditDefaultsOnly, Category = "Boids")
+	float RandomNoiseFactor;
 
 private:
 
 	/** Boids */
 	FVector Cohesion();
-	FVector Separation();
 	FVector Alignment();
 
+	void AddingAlreadyOverlappingSheeps();
+	void AddSheepInVisualRange(AActor*& OtherActor);
+	void RemoveSheepInVisualRange(AActor*& OtherActor);
 	UPROPERTY()
-	TArray<AActor*> SheepInVisualRange;
+	TArray<ABaseCharacter*> SheepInVisualRange;
 	float VisualSphereRadius = 750.f;
-	UPROPERTY()
-	TArray<AActor*> SheepInProtectedRange;
-	float ProtectedSphereRadius = 200.f;
 };
