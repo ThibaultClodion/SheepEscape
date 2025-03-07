@@ -31,6 +31,8 @@ protected:
 	float AlignmentFactor;
 	UPROPERTY(EditDefaultsOnly, Category = Boids)
 	float AvoidDistance;
+	UPROPERTY(EditDefaultsOnly, Category = Boids)
+	float Acceleration;
 
 	/** Boid Visual Sphere */
 	void InitializeSphereOverlaps();
@@ -45,7 +47,8 @@ protected:
 
 private:
 	/** Attributes */
-	float MaxSpeed = 500.f;
+	float MaxSpeed = 250.f;
+	float MinSpeed = 100.f;
 
 	/** Boids Behavior */
 	FVector Cohesion();
@@ -60,5 +63,5 @@ private:
 	void RemoveSheepInVisualRange(AActor*& OtherActor);
 
 	TArray<ABaseCharacter*> SheepInVisualRange;
-	float VisualSphereRadius = 75;
+	float VisualSphereRadius = 300.f;
 };

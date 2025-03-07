@@ -24,9 +24,6 @@ void ASheepBot::BeginPlay()
 	Super::BeginPlay();
 
 	InitializeSphereOverlaps();
-
-	//Initialize sheep with random input
-	BoidVelocity = FVector(FMath::RandRange(-5.f, 5.f), FMath::RandRange(-5.f, 5.f), 0.f);
 }
 
 void ASheepBot::Tick(float DeltaTime)
@@ -35,16 +32,14 @@ void ASheepBot::Tick(float DeltaTime)
 
 	if (Controller)
 	{
-		BoidVelocity += Cohesion() + Separation() + Alignment();
+		FVector TargetVelocity = BoidVelocity + Cohesion() + Separation() + Alignment();
+		BoidVelocity = FMath::Lerp(BoidVelocity, TargetVelocity, DeltaTime * Acceleration);
+		BoidVelocity *= 0.95f;
+		BoidVelocity = BoidVelocity.GetClampedToSize(0.f, MaxSpeed);
 
-		if (BoidVelocity.Length() > 15.f)
-		{
-			BoidVelocity = BoidVelocity / BoidVelocity.Length() * 15.f;
-		}
+		UE_LOG(LogTemp, Warning, TEXT("x : %lf, y : %lf, z : %lf"), BoidVelocity.X / MaxSpeed, BoidVelocity.Y / MaxSpeed, BoidVelocity.Z / MaxSpeed);
 
-		UE_LOG(LogTemp, Warning, TEXT("x : %lf, y : %lf, z : %lf"), BoidVelocity.X / 15.f, BoidVelocity.Y / 15.f, BoidVelocity.Z / 15.f);
-
-		AddMovementInput(BoidVelocity / 15.f);
+		AddMovementInput(BoidVelocity / MaxSpeed);
 	}
 }
 
@@ -64,6 +59,11 @@ FVector ASheepBot::Cohesion()
 	}
 	HerdCenter /= SheepInVisualRange.Num();
 
+	if (FVector::Distance(GetActorLocation(), HerdCenter) > VisualSphereRadius*1.8f)
+	{
+		return (HerdCenter - GetActorLocation()).GetSafeNormal() * MaxSpeed;
+	}
+
 	return (HerdCenter - GetActorLocation()) * CohesionFactor;
 }
 
@@ -76,7 +76,7 @@ FVector ASheepBot::Separation()
 	{
 		if (FVector::Distance(GetActorLocation(), Sheep->GetActorLocation()) < AvoidDistance)
 		{
-			Move += GetActorLocation() - Sheep->GetActorLocation();
+			Move += (GetActorLocation() - Sheep->GetActorLocation()).GetSafeNormal() * (AvoidDistance - FVector::Distance(GetActorLocation(), Sheep->GetActorLocation()));
 		}
 	}
 
