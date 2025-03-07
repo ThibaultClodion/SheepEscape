@@ -51,6 +51,7 @@ private:
 	float MinSpeed = 100.f;
 
 	/** Boids Behavior */
+	void Move(float DeltaTime);
 	FVector Cohesion();
 	FVector Separation();
 	FVector Alignment();

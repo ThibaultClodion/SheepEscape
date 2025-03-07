@@ -32,20 +32,31 @@ void ASheepBot::Tick(float DeltaTime)
 
 	if (Controller)
 	{
-		FVector TargetVelocity = BoidVelocity + Cohesion() + Separation() + Alignment();
-		BoidVelocity = FMath::Lerp(BoidVelocity, TargetVelocity, DeltaTime * Acceleration);
-		BoidVelocity *= 0.95f;
-		BoidVelocity = BoidVelocity.GetClampedToSize(0.f, MaxSpeed);
+		Move(DeltaTime);
 
+		//Temp
 		UE_LOG(LogTemp, Warning, TEXT("x : %lf, y : %lf, z : %lf"), BoidVelocity.X / MaxSpeed, BoidVelocity.Y / MaxSpeed, BoidVelocity.Z / MaxSpeed);
-
-		AddMovementInput(BoidVelocity / MaxSpeed);
 	}
 }
 
 void ASheepBot::Eliminate()
 {
 	UE_LOG(LogTemp, Warning, TEXT("SheepBot Eliminated !"));
+}
+
+void ASheepBot::Move(float DeltaTime)
+{
+	// Add Boid Behavior Velocity
+	FVector TargetVelocity = BoidVelocity + Cohesion() + Separation() + Alignment();
+	// Smooth velocity changement
+	BoidVelocity = FMath::Lerp(BoidVelocity, TargetVelocity, DeltaTime * Acceleration);
+	// Add Inertia to decelerate
+	BoidVelocity *= 0.95f;
+	// Clamp Size of Speed to MaxSpeed
+	BoidVelocity = BoidVelocity.GetClampedToSize(0.f, MaxSpeed);
+
+	// Apply BoidVelocity / MaxSpeed to simulate joystick input of player
+	AddMovementInput(BoidVelocity / MaxSpeed);
 }
 
 FVector ASheepBot::Cohesion()
@@ -59,6 +70,7 @@ FVector ASheepBot::Cohesion()
 	}
 	HerdCenter /= SheepInVisualRange.Num();
 
+	// Run to the herd center if it's far to visual radius
 	if (FVector::Distance(GetActorLocation(), HerdCenter) > VisualSphereRadius*1.8f)
 	{
 		return (HerdCenter - GetActorLocation()).GetSafeNormal() * MaxSpeed;
@@ -74,9 +86,11 @@ FVector ASheepBot::Separation()
 	FVector Move = FVector::ZeroVector;
 	for (ABaseCharacter* Sheep : SheepInVisualRange)
 	{
-		if (FVector::Distance(GetActorLocation(), Sheep->GetActorLocation()) < AvoidDistance)
+		float Distance = FVector::Distance(GetActorLocation(), Sheep->GetActorLocation());
+		if (Distance < AvoidDistance)
 		{
-			Move += (GetActorLocation() - Sheep->GetActorLocation()).GetSafeNormal() * (AvoidDistance - FVector::Distance(GetActorLocation(), Sheep->GetActorLocation()));
+			// Avoid brutal collision
+			Move += (GetActorLocation() - Sheep->GetActorLocation()).GetSafeNormal() * (AvoidDistance - Distance);
 		}
 	}
 
