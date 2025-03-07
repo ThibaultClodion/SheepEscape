@@ -33,9 +33,6 @@ void ASheepBot::Tick(float DeltaTime)
 	if (Controller)
 	{
 		Move(DeltaTime);
-
-		//Temp
-		UE_LOG(LogTemp, Warning, TEXT("x : %lf, y : %lf, z : %lf"), BoidVelocity.X / MaxSpeed, BoidVelocity.Y / MaxSpeed, BoidVelocity.Z / MaxSpeed);
 	}
 }
 
@@ -46,17 +43,32 @@ void ASheepBot::Eliminate()
 
 void ASheepBot::Move(float DeltaTime)
 {
-	// Add Boid Behavior Velocity
+	// Get Boid Behavior Velocity
 	FVector TargetVelocity = BoidVelocity + Cohesion() + Separation() + Alignment();
 	// Smooth velocity changement
 	BoidVelocity = FMath::Lerp(BoidVelocity, TargetVelocity, DeltaTime * Acceleration);
 	// Add Inertia to decelerate
-	BoidVelocity *= 0.95f;
+	BoidVelocity *= InertiaFactor;
 	// Clamp Size of Speed to MaxSpeed
 	BoidVelocity = BoidVelocity.GetClampedToSize(0.f, MaxSpeed);
 
-	// Apply BoidVelocity / MaxSpeed to simulate joystick input of player
-	AddMovementInput(BoidVelocity / MaxSpeed);
+	// If Velocity is not to slow
+	if ((BoidVelocity / MaxSpeed).Length() >= MinVelocityLengthToMove)
+	{
+		// Apply BoidVelocity / MaxSpeed to simulate joystick input of player
+		AddMovementInput(BoidVelocity / MaxSpeed);
+
+		//Temp
+		UE_LOG(LogTemp, Warning, TEXT("x : %lf, y : %lf, Length : %lf"), BoidVelocity.X / MaxSpeed, BoidVelocity.Y / MaxSpeed, (BoidVelocity / MaxSpeed).Length());
+	}
+	else
+	{
+		// Stop all movements
+		BoidVelocity = FVector::ZeroVector;
+		GetCharacterMovement()->StopMovementImmediately();
+
+		// TODO : Gazing()
+	}
 }
 
 FVector ASheepBot::Cohesion()

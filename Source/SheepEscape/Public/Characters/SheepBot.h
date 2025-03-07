@@ -33,6 +33,10 @@ protected:
 	float AvoidDistance;
 	UPROPERTY(EditDefaultsOnly, Category = Boids)
 	float Acceleration;
+	UPROPERTY(EditDefaultsOnly, Category = Boids)
+	float InertiaFactor;
+	UPROPERTY(EditDefaultsOnly, Category = Boids)
+	float MinVelocityLengthToMove;
 
 	/** Boid Visual Sphere */
 	void InitializeSphereOverlaps();
