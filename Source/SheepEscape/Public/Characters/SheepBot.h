@@ -60,5 +60,5 @@ private:
 	void RemoveSheepInVisualRange(AActor*& OtherActor);
 
 	TArray<ABaseCharacter*> SheepInVisualRange;
-	float VisualSphereRadius = 750.f;
+	float VisualSphereRadius = 75;
 };

@@ -26,7 +26,7 @@ void ASheepBot::BeginPlay()
 	InitializeSphereOverlaps();
 
 	//Initialize sheep with random input
-	BoidVelocity = FVector(FMath::RandRange(-1.f, 1.f), FMath::RandRange(-1.f, 1.f), 0.f);
+	BoidVelocity = FVector(FMath::RandRange(-5.f, 5.f), FMath::RandRange(-5.f, 5.f), 0.f);
 }
 
 void ASheepBot::Tick(float DeltaTime)
@@ -37,9 +37,14 @@ void ASheepBot::Tick(float DeltaTime)
 	{
 		BoidVelocity += Cohesion() + Separation() + Alignment();
 
-		UE_LOG(LogTemp, Warning, TEXT("x : %lf, y : %lf, z : %lf"), BoidVelocity.X, BoidVelocity.Y, BoidVelocity.Z);
+		if (BoidVelocity.Length() > 15.f)
+		{
+			BoidVelocity = BoidVelocity / BoidVelocity.Length() * 15.f;
+		}
 
-		AddMovementInput(BoidVelocity);
+		UE_LOG(LogTemp, Warning, TEXT("x : %lf, y : %lf, z : %lf"), BoidVelocity.X / 15.f, BoidVelocity.Y / 15.f, BoidVelocity.Z / 15.f);
+
+		AddMovementInput(BoidVelocity / 15.f);
 	}
 }
 
