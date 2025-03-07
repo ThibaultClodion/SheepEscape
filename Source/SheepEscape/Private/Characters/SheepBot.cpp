@@ -10,7 +10,7 @@
 
 ASheepBot::ASheepBot()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	GetCharacterMovement()->MaxWalkSpeed = MaxSpeed;
 
 	VisualSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Visual Sphere"));
 	VisualSphere->SetupAttachment(GetRootComponent());
@@ -24,11 +24,23 @@ void ASheepBot::BeginPlay()
 	Super::BeginPlay();
 
 	InitializeSphereOverlaps();
+
+	//Initialize sheep with random input
+	BoidVelocity = FVector(FMath::RandRange(-1.f, 1.f), FMath::RandRange(-1.f, 1.f), 0.f);
 }
 
 void ASheepBot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (Controller)
+	{
+		BoidVelocity += Cohesion() + Separation() + Alignment();
+
+		UE_LOG(LogTemp, Warning, TEXT("x : %lf, y : %lf, z : %lf"), BoidVelocity.X, BoidVelocity.Y, BoidVelocity.Z);
+
+		AddMovementInput(BoidVelocity);
+	}
 }
 
 void ASheepBot::Eliminate()
@@ -36,6 +48,49 @@ void ASheepBot::Eliminate()
 	UE_LOG(LogTemp, Warning, TEXT("SheepBot Eliminated !"));
 }
 
+FVector ASheepBot::Cohesion()
+{
+	if (SheepInVisualRange.Num() == 0) return FVector::ZeroVector;
+
+	FVector HerdCenter = FVector::ZeroVector;
+	for (ABaseCharacter* Sheep : SheepInVisualRange)
+	{
+		HerdCenter += Sheep->GetActorLocation();
+	}
+	HerdCenter /= SheepInVisualRange.Num();
+
+	return (HerdCenter - GetActorLocation()) * CohesionFactor;
+}
+
+FVector ASheepBot::Separation()
+{
+	if (SheepInVisualRange.Num() == 0) return FVector::ZeroVector;
+
+	FVector Move = FVector::ZeroVector;
+	for (ABaseCharacter* Sheep : SheepInVisualRange)
+	{
+		if (FVector::Distance(GetActorLocation(), Sheep->GetActorLocation()) < AvoidDistance)
+		{
+			Move += GetActorLocation() - Sheep->GetActorLocation();
+		}
+	}
+
+	return Move * SeparationFactor;
+}
+
+FVector ASheepBot::Alignment()
+{
+	if (SheepInVisualRange.Num() == 0) return FVector::ZeroVector;
+
+	FVector AverageVelocity = FVector::ZeroVector;
+	for (ABaseCharacter* Sheep : SheepInVisualRange)
+	{
+		AverageVelocity += Sheep->GetVelocity();
+	}
+	AverageVelocity /= SheepInVisualRange.Num();
+
+	return (AverageVelocity - GetVelocity()) * AlignmentFactor;
+}
 
 void ASheepBot::InitializeSphereOverlaps()
 {

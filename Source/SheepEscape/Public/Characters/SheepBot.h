@@ -22,6 +22,16 @@ protected:
 
 	virtual void Eliminate() override;
 
+	/** Boids Behavior */
+	UPROPERTY(EditDefaultsOnly, Category=Boids)
+	float CohesionFactor;
+	UPROPERTY(EditDefaultsOnly, Category = Boids)
+	float SeparationFactor;
+	UPROPERTY(EditDefaultsOnly, Category = Boids)
+	float AlignmentFactor;
+	UPROPERTY(EditDefaultsOnly, Category = Boids)
+	float AvoidDistance;
+
 	/** Boid Visual Sphere */
 	void InitializeSphereOverlaps();
 
@@ -34,6 +44,15 @@ protected:
 	USphereComponent* VisualSphere;
 
 private:
+	/** Attributes */
+	float MaxSpeed = 500.f;
+
+	/** Boids Behavior */
+	FVector Cohesion();
+	FVector Separation();
+	FVector Alignment();
+
+	FVector BoidVelocity;
 
 	/** Boid Visual Sphere */
 	void AddingAlreadyOverlappingSheeps();

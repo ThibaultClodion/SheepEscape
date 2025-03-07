@@ -6,7 +6,7 @@
 
 ASheepCharacter::ASheepCharacter()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	GetCharacterMovement()->MaxWalkSpeed = MaxSpeed;
 }
 
 void ASheepCharacter::Action(const FInputActionValue& Value)
