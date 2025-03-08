@@ -47,8 +47,6 @@ void ASheepBot::Move(float DeltaTime)
 	FVector TargetVelocity = BoidVelocity + Cohesion() + Separation() + Alignment();
 	// Smooth velocity changement
 	BoidVelocity = FMath::Lerp(BoidVelocity, TargetVelocity, DeltaTime * Acceleration);
-	// Add Inertia to decelerate
-	BoidVelocity *= InertiaFactor;
 	// Clamp Size of Speed to MaxSpeed
 	BoidVelocity = BoidVelocity.GetClampedToSize(0.f, MaxSpeed);
 
@@ -57,9 +55,6 @@ void ASheepBot::Move(float DeltaTime)
 	{
 		// Apply BoidVelocity / MaxSpeed to simulate joystick input of player
 		AddMovementInput(BoidVelocity / MaxSpeed);
-
-		//Temp
-		UE_LOG(LogTemp, Warning, TEXT("x : %lf, y : %lf, Length : %lf"), BoidVelocity.X / MaxSpeed, BoidVelocity.Y / MaxSpeed, (BoidVelocity / MaxSpeed).Length());
 	}
 	else
 	{

@@ -23,6 +23,6 @@ protected:
 
 private:
 	/** Attributes */
-	float MaxSpeed = 250.f;
+	float MaxSpeed = 500.f;
 
 };

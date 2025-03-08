@@ -34,8 +34,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Boids)
 	float Acceleration;
 	UPROPERTY(EditDefaultsOnly, Category = Boids)
-	float InertiaFactor;
-	UPROPERTY(EditDefaultsOnly, Category = Boids)
 	float MinVelocityLengthToMove;
 
 	/** Boid Visual Sphere */
@@ -51,8 +49,7 @@ protected:
 
 private:
 	/** Attributes */
-	float MaxSpeed = 250.f;
-	float MinSpeed = 100.f;
+	float MaxSpeed = 500.f;
 
 	/** Boids Behavior */
 	void Move(float DeltaTime);
