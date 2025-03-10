@@ -35,6 +35,8 @@ protected:
 	float Acceleration;
 	UPROPERTY(EditDefaultsOnly, Category = Boids)
 	float MinVelocityLengthToMove;
+	UPROPERTY(EditDefaultsOnly, Category = Boids)
+	float MinVelocityLengthToStopGazing;
 
 	/** Boid Visual Sphere */
 	void InitializeSphereOverlaps();
@@ -56,8 +58,17 @@ private:
 	FVector Cohesion();
 	FVector Separation();
 	FVector Alignment();
-
 	FVector BoidVelocity;
+
+	/** Gazing Behavior */
+	void StartGazing();
+	void StopGazing();
+	void InterruptGazing();
+	bool IsGazing;
+	float MinGazingTime = 5.0f;
+	float MaxGazingTime = 10.0f;
+	FVector RandomGazingInput;
+	FTimerHandle GazingTimer;
 
 	/** Boid Visual Sphere */
 	void AddingAlreadyOverlappingSheeps();

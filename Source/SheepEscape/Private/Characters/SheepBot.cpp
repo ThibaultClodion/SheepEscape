@@ -50,19 +50,34 @@ void ASheepBot::Move(float DeltaTime)
 	// Clamp Size of Speed to MaxSpeed
 	BoidVelocity = BoidVelocity.GetClampedToSize(0.f, MaxSpeed);
 
-	// If Velocity is not to slow
-	if ((BoidVelocity / MaxSpeed).Length() >= MinVelocityLengthToMove)
+	UE_LOG(LogTemp, Warning, TEXT("Length : %lf"), (BoidVelocity / MaxSpeed).Length());
+
+	if (IsGazing)
 	{
-		// Apply BoidVelocity / MaxSpeed to simulate joystick input of player
-		AddMovementInput(BoidVelocity / MaxSpeed);
+		// If Velocity is too high -> StopGazing
+		if ((BoidVelocity / MaxSpeed).Length() >= MinVelocityLengthToStopGazing)
+		{
+			InterruptGazing();
+			AddMovementInput(BoidVelocity / MaxSpeed);
+		}
+		else
+		{
+			// Don't let velocity being incremented
+			BoidVelocity = FVector::ZeroVector;
+		}
 	}
 	else
 	{
-		// Stop all movements
-		BoidVelocity = FVector::ZeroVector;
-		GetCharacterMovement()->StopMovementImmediately();
-
-		// TODO : Gazing()
+		// If Velocity is not to slow
+		if ((BoidVelocity / MaxSpeed).Length() >= MinVelocityLengthToMove)
+		{
+			// Apply BoidVelocity / MaxSpeed to simulate joystick input of player
+			AddMovementInput(BoidVelocity / MaxSpeed);
+		}
+		else
+		{
+			StartGazing();
+		}
 	}
 }
 
@@ -116,6 +131,28 @@ FVector ASheepBot::Alignment()
 	AverageVelocity /= SheepInVisualRange.Num();
 
 	return (AverageVelocity - GetVelocity()) * AlignmentFactor;
+}
+
+void ASheepBot::StartGazing()
+{
+	// Stop all movements
+	BoidVelocity = FVector::ZeroVector;
+	GetCharacterMovement()->StopMovementImmediately();
+
+	IsGazing = true;
+	const float GazingTime = FMath::RandRange(MinGazingTime, MaxGazingTime);
+	GetWorldTimerManager().SetTimer(GazingTimer, this, &ASheepBot::StopGazing, GazingTime);
+}
+
+void ASheepBot::StopGazing()
+{
+	IsGazing = false;
+}
+
+void ASheepBot::InterruptGazing()
+{
+	StopGazing();
+	GetWorldTimerManager().ClearTimer(GazingTimer);
 }
 
 void ASheepBot::InitializeSphereOverlaps()
