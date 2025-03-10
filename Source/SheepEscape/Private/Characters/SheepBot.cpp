@@ -45,7 +45,23 @@ void ASheepBot::Move(float DeltaTime)
 {
 	UpdateBoidVelocity(DeltaTime);
 
-	if (IsGazing)
+	if (IsLeading)
+	{
+		// If Velocity is too high -> StopGazing
+		if ((BoidVelocity / MaxSpeed).Length() >= FMath::Max(MinVelocityLengthToStopGazing, RandomLeadingInput.Length()))
+		{
+			InterruptLeading();
+			AddMovementInput(BoidVelocity / MaxSpeed);
+		}
+		else
+		{
+			// Don't let velocity being incremented
+			BoidVelocity = FVector::ZeroVector;
+
+			AddMovementInput(RandomLeadingInput);
+		}
+	}
+	else if (IsGazing)
 	{
 		// If Velocity is too high -> StopGazing
 		if ((BoidVelocity / MaxSpeed).Length() >= MinVelocityLengthToStopGazing)
@@ -141,6 +157,7 @@ void ASheepBot::StartGazing()
 	BoidVelocity = FVector::ZeroVector;
 	GetCharacterMovement()->StopMovementImmediately();
 
+	// Setup Gazing Timer
 	IsGazing = true;
 	const float GazingTime = FMath::RandRange(MinGazingTime, MaxGazingTime);
 	GetWorldTimerManager().SetTimer(GazingTimer, this, &ASheepBot::StopGazing, GazingTime);
@@ -149,12 +166,44 @@ void ASheepBot::StartGazing()
 void ASheepBot::StopGazing()
 {
 	IsGazing = false;
+
+	IsLeading = true;
+	bool OneChanceOutOfTwenty = (FMath::RandRange(0, 20) == 0);
+
+	// Try to lead herd to another location
+	if (OneChanceOutOfTwenty)
+	{
+		RandomLeadingInput = FVector(FMath::RandRange(-1.f, 1.f), FMath::RandRange(-1.f, 1.f), 0.f).GetClampedToSize(0.8f, 1.f);
+	}
+	// Little move to gaze at another location
+	else
+	{
+		RandomLeadingInput = FVector(FMath::RandRange(-1.f, 1.f), FMath::RandRange(-1.f, 1.f), 0.f).GetClampedToSize(0, MinVelocityLengthToStopGazing);
+	}
 }
 
 void ASheepBot::InterruptGazing()
 {
-	StopGazing();
+	IsGazing = false;
 	GetWorldTimerManager().ClearTimer(GazingTimer);
+}
+
+void ASheepBot::StartLeading()
+{
+	IsLeading = true;
+	const float LeadingTime = FMath::RandRange(MinLeadingTime, MaxLeadingTime);
+	GetWorldTimerManager().SetTimer(LeadingTimer, this, &ASheepBot::StopLeading, LeadingTime);
+}
+
+void ASheepBot::StopLeading()
+{
+	IsLeading = false;
+}
+
+void ASheepBot::InterruptLeading()
+{
+	IsLeading = false;
+	GetWorldTimerManager().ClearTimer(LeadingTimer);
 }
 
 void ASheepBot::InitializeSphereOverlaps()

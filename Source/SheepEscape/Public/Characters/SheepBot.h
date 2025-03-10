@@ -67,9 +67,18 @@ private:
 	void InterruptGazing();
 	bool IsGazing;
 	float MinGazingTime = 5.0f;
-	float MaxGazingTime = 10.0f;
-	FVector RandomGazingInput;
+	float MaxGazingTime = 20.0f;
 	FTimerHandle GazingTimer;
+
+	/** Leading Behavior */
+	void StartLeading();
+	void StopLeading();
+	void InterruptLeading();
+	bool IsLeading;
+	float MinLeadingTime = 0.5f;
+	float MaxLeadingTime = 2.0f;
+	FVector RandomLeadingInput;
+	FTimerHandle LeadingTimer;
 
 	/** Boid Visual Sphere */
 	void AddingAlreadyOverlappingSheeps();
