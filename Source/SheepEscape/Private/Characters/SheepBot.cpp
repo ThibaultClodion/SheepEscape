@@ -47,45 +47,28 @@ void ASheepBot::Move(float DeltaTime)
 
 	if (IsLeading)
 	{
-		// If Velocity is too high -> StopLeading
-		if ((BoidVelocity / MaxSpeed).Length() >= FMath::Max(MinVelocityLengthToStopGazing, RandomLeadingInput.Length()))
-		{
-			InterruptLeading();
-			AddMovementInput(BoidVelocity / MaxSpeed);
-		}
-		else
-		{
-			// Don't let velocity being incremented
-			BoidVelocity = FVector::ZeroVector;
-
-			AddMovementInput(RandomLeadingInput);
-		}
+		LeadMovement();
 	}
 	else if (IsGazing)
 	{
-		// If Velocity is too high -> StopGazing
-		if ((BoidVelocity / MaxSpeed).Length() >= MinVelocityLengthToStopGazing)
-		{
-			InterruptGazing();
-			AddMovementInput(BoidVelocity / MaxSpeed);
-		}
-		else
-		{
-			// Don't let velocity being incremented
-			BoidVelocity = FVector::ZeroVector;
-		}
+		GazingMovement();
 	}
 	else
 	{
-		// If Velocity is not to slow -> Boid Movement
-		if ((BoidVelocity / MaxSpeed).Length() >= MinVelocityLengthToMove)
-		{
-			AddMovementInput(BoidVelocity / MaxSpeed);
-		}
-		else
-		{
-			StartGazing();
-		}
+		BoidMovement();
+	}
+}
+
+void ASheepBot::BoidMovement()
+{
+	if ((BoidVelocity / MaxSpeed).Length() >= MinVelocityLengthToMove)
+	{
+		AddMovementInput(BoidVelocity / MaxSpeed);
+	}
+	// If Velocity is too slow -> Stop movement and start gazing
+	else
+	{
+		StartGazing();
 	}
 }
 
@@ -153,6 +136,21 @@ void ASheepBot::UpdateBoidVelocity(float DeltaTime)
 	BoidVelocity = BoidVelocity.GetClampedToSize(0.f, MaxSpeed);
 }
 
+void ASheepBot::GazingMovement()
+{
+	// If Velocity is too high -> StopGazing to follow herd
+	if ((BoidVelocity / MaxSpeed).Length() >= MinVelocityLengthToStopGazing)
+	{
+		InterruptGazing();
+		AddMovementInput(BoidVelocity / MaxSpeed);
+	}
+	else
+	{
+		// Don't let velocity being incremented
+		BoidVelocity = FVector::ZeroVector;
+	}
+}
+
 void ASheepBot::StartGazing()
 {
 	// Stop all movements
@@ -174,7 +172,7 @@ void ASheepBot::StopGazing()
 	// Try to lead herd to another location
 	if (OneChanceOutOfTwenty)
 	{
-		//Lead longer
+		// Lead longer
 		StartLeading(1.5f);
 		RandomLeadingInput = FVector(FMath::RandRange(-1.f, 1.f), FMath::RandRange(-1.f, 1.f), 0.f).GetClampedToSize(0.8f, 1.f);
 	}
@@ -192,8 +190,26 @@ void ASheepBot::InterruptGazing()
 	GetWorldTimerManager().ClearTimer(GazingTimer);
 }
 
+void ASheepBot::LeadMovement()
+{
+	// If Velocity is too high -> StopLeading to follow herd
+	if ((BoidVelocity / MaxSpeed).Length() >= FMath::Max(MinVelocityLengthToStopGazing, RandomLeadingInput.Length()))
+	{
+		InterruptLeading();
+		AddMovementInput(BoidVelocity / MaxSpeed);
+	}
+	else
+	{
+		// Don't let velocity being incremented
+		BoidVelocity = FVector::ZeroVector;
+
+		AddMovementInput(RandomLeadingInput);
+	}
+}
+
 void ASheepBot::StartLeading(float LeadingTimeFactor)
 {
+	// Setup Leading Timer
 	IsLeading = true;
 	const float LeadingTime = FMath::RandRange(MinLeadingTime, MaxLeadingTime) * LeadingTimeFactor;
 	GetWorldTimerManager().SetTimer(LeadingTimer, this, &ASheepBot::StopLeading, LeadingTime);
@@ -201,12 +217,12 @@ void ASheepBot::StartLeading(float LeadingTimeFactor)
 
 void ASheepBot::StopLeading()
 {
+	IsLeading = false;
+
 	// Stop all movements
 	BoidVelocity = FVector::ZeroVector;
-	GetCharacterMovement()->StopMovementImmediately();
-
-	IsLeading = false;
 	RandomLeadingInput = FVector::ZeroVector;
+	GetCharacterMovement()->StopMovementImmediately();
 }
 
 void ASheepBot::InterruptLeading()
