@@ -58,6 +58,7 @@ private:
 	FVector Cohesion();
 	FVector Separation();
 	FVector Alignment();
+	void UpdateBoidVelocity(float DeltaTime);
 	FVector BoidVelocity;
 
 	/** Gazing Behavior */

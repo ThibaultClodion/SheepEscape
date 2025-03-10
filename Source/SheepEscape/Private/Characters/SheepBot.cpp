@@ -43,14 +43,7 @@ void ASheepBot::Eliminate()
 
 void ASheepBot::Move(float DeltaTime)
 {
-	// Get Boid Behavior Velocity
-	FVector TargetVelocity = BoidVelocity + Cohesion() + Separation() + Alignment();
-	// Smooth velocity changement
-	BoidVelocity = FMath::Lerp(BoidVelocity, TargetVelocity, DeltaTime * Acceleration);
-	// Clamp Size of Speed to MaxSpeed
-	BoidVelocity = BoidVelocity.GetClampedToSize(0.f, MaxSpeed);
-
-	UE_LOG(LogTemp, Warning, TEXT("Length : %lf"), (BoidVelocity / MaxSpeed).Length());
+	UpdateBoidVelocity(DeltaTime);
 
 	if (IsGazing)
 	{
@@ -68,10 +61,9 @@ void ASheepBot::Move(float DeltaTime)
 	}
 	else
 	{
-		// If Velocity is not to slow
+		// If Velocity is not to slow -> Boid Movement
 		if ((BoidVelocity / MaxSpeed).Length() >= MinVelocityLengthToMove)
 		{
-			// Apply BoidVelocity / MaxSpeed to simulate joystick input of player
 			AddMovementInput(BoidVelocity / MaxSpeed);
 		}
 		else
@@ -131,6 +123,16 @@ FVector ASheepBot::Alignment()
 	AverageVelocity /= SheepInVisualRange.Num();
 
 	return (AverageVelocity - GetVelocity()) * AlignmentFactor;
+}
+
+void ASheepBot::UpdateBoidVelocity(float DeltaTime)
+{
+	// Get Boid Behavior Velocity
+	FVector TargetVelocity = BoidVelocity + Cohesion() + Separation() + Alignment();
+	// Smooth velocity changement
+	BoidVelocity = FMath::Lerp(BoidVelocity, TargetVelocity, DeltaTime * Acceleration);
+	// Clamp Size of Speed to MaxSpeed
+	BoidVelocity = BoidVelocity.GetClampedToSize(0.f, MaxSpeed);
 }
 
 void ASheepBot::StartGazing()
