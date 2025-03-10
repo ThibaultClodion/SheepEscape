@@ -47,7 +47,7 @@ void ASheepBot::Move(float DeltaTime)
 
 	if (IsLeading)
 	{
-		// If Velocity is too high -> StopGazing
+		// If Velocity is too high -> StopLeading
 		if ((BoidVelocity / MaxSpeed).Length() >= FMath::Max(MinVelocityLengthToStopGazing, RandomLeadingInput.Length()))
 		{
 			InterruptLeading();
@@ -147,6 +147,8 @@ void ASheepBot::UpdateBoidVelocity(float DeltaTime)
 	FVector TargetVelocity = BoidVelocity + Cohesion() + Separation() + Alignment();
 	// Smooth velocity changement
 	BoidVelocity = FMath::Lerp(BoidVelocity, TargetVelocity, DeltaTime * Acceleration);
+	// Inertia
+	BoidVelocity *= 0.99f;
 	// Clamp Size of Speed to MaxSpeed
 	BoidVelocity = BoidVelocity.GetClampedToSize(0.f, MaxSpeed);
 }
@@ -167,17 +169,19 @@ void ASheepBot::StopGazing()
 {
 	IsGazing = false;
 
-	IsLeading = true;
 	bool OneChanceOutOfTwenty = (FMath::RandRange(0, 20) == 0);
 
 	// Try to lead herd to another location
 	if (OneChanceOutOfTwenty)
 	{
+		//Lead longer
+		StartLeading(1.5f);
 		RandomLeadingInput = FVector(FMath::RandRange(-1.f, 1.f), FMath::RandRange(-1.f, 1.f), 0.f).GetClampedToSize(0.8f, 1.f);
 	}
 	// Little move to gaze at another location
 	else
 	{
+		StartLeading(1.f);
 		RandomLeadingInput = FVector(FMath::RandRange(-1.f, 1.f), FMath::RandRange(-1.f, 1.f), 0.f).GetClampedToSize(0, MinVelocityLengthToStopGazing);
 	}
 }
@@ -188,21 +192,28 @@ void ASheepBot::InterruptGazing()
 	GetWorldTimerManager().ClearTimer(GazingTimer);
 }
 
-void ASheepBot::StartLeading()
+void ASheepBot::StartLeading(float LeadingTimeFactor)
 {
 	IsLeading = true;
-	const float LeadingTime = FMath::RandRange(MinLeadingTime, MaxLeadingTime);
+	const float LeadingTime = FMath::RandRange(MinLeadingTime, MaxLeadingTime) * LeadingTimeFactor;
 	GetWorldTimerManager().SetTimer(LeadingTimer, this, &ASheepBot::StopLeading, LeadingTime);
 }
 
 void ASheepBot::StopLeading()
 {
+	// Stop all movements
+	BoidVelocity = FVector::ZeroVector;
+	GetCharacterMovement()->StopMovementImmediately();
+
 	IsLeading = false;
+	RandomLeadingInput = FVector::ZeroVector;
 }
 
 void ASheepBot::InterruptLeading()
 {
 	IsLeading = false;
+	RandomLeadingInput = FVector::ZeroVector;
+
 	GetWorldTimerManager().ClearTimer(LeadingTimer);
 }
 

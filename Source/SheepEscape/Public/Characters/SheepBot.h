@@ -71,7 +71,7 @@ private:
 	FTimerHandle GazingTimer;
 
 	/** Leading Behavior */
-	void StartLeading();
+	void StartLeading(float LeadingTimeFactor);
 	void StopLeading();
 	void InterruptLeading();
 	bool IsLeading;
