@@ -17,6 +17,8 @@ public:
 	ABaseCharacter();
 	virtual void Tick(float DeltaTime) override;
 
+	void Pushed(FVector Direction, float HeadbuttForceScale);
+
 protected:
 	virtual void BeginPlay() override;
 

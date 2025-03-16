@@ -25,4 +25,20 @@ private:
 	/** Attributes */
 	float MaxSpeed = 500.f;
 
+	/** Heabutt */
+	void Heabutt();
+	void HeadButtTrace(TArray<FHitResult>& HitResults);
+
+	UPROPERTY(EditDefaultsOnly, Category = Headbutt)
+	float HeadbuttForceScale = 500000.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = Headbutt)
+	FVector HeadbuttTraceExtent = FVector(5.f);
+
+	UPROPERTY(VisibleAnywhere, Category = Headbutt)
+	USceneComponent* HeadbuttTraceStart;
+
+	UPROPERTY(VisibleAnywhere, Category = Headbutt)
+	USceneComponent* HeadbuttTraceEnd;
+
 };
