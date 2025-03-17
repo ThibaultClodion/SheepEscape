@@ -5,6 +5,7 @@
 #include "AIController.h"
 #include "Components/CapsuleComponent.h"
 #include "Characters/SheepCharacter.h"
+#include "Characters/ShepherdCharacter.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -94,8 +95,9 @@ FVector ASheepBot::Cohesion()
 
 FVector ASheepBot::Separation()
 {
-	if (SheepInVisualRange.Num() == 0) return FVector::ZeroVector;
+	if (SheepInVisualRange.Num() == 0 && !Shepherd) return FVector::ZeroVector;
 
+	//Separate from others sheeps
 	FVector Move = FVector::ZeroVector;
 	for (ABaseCharacter* Sheep : SheepInVisualRange)
 	{
@@ -105,6 +107,13 @@ FVector ASheepBot::Separation()
 			// Avoid brutal collision
 			Move += (GetActorLocation() - Sheep->GetActorLocation()).GetSafeNormal() * (AvoidDistance - Distance);
 		}
+	}
+
+	//Separate from shepherd
+	if (Shepherd)
+	{
+		float Distance = FVector::Distance(GetActorLocation(), Shepherd->GetActorLocation());
+		Move += (GetActorLocation() - Shepherd->GetActorLocation()).GetSafeNormal() * (VisualSphereRadius - Distance);
 	}
 
 	return Move * SeparationFactor;
@@ -238,31 +247,31 @@ void ASheepBot::InitializeSphereOverlaps()
 	VisualSphere->OnComponentBeginOverlap.AddDynamic(this, &ASheepBot::OnVisualSphereOverlap);
 	VisualSphere->OnComponentEndOverlap.AddDynamic(this, &ASheepBot::OnVisualSphereEndOverlap);
 
-	AddingAlreadyOverlappingSheeps();
+	AddingAlreadyOverlappingActors();
 }
 
 void ASheepBot::OnVisualSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	AddSheepInVisualRange(OtherActor);
+	AddActorInVisualRange(OtherActor);
 }
 
 void ASheepBot::OnVisualSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	RemoveSheepInVisualRange(OtherActor);
+	RemoveActorInVisualRange(OtherActor);
 }
 
-void ASheepBot::AddingAlreadyOverlappingSheeps()
+void ASheepBot::AddingAlreadyOverlappingActors()
 {
-	TArray<AActor*> AlreadyOverlappingSheeps;
-	VisualSphere->GetOverlappingActors(AlreadyOverlappingSheeps);
+	TArray<AActor*> AlreadyOverlappingActors;
+	VisualSphere->GetOverlappingActors(AlreadyOverlappingActors);
 
-	for (AActor* Sheep : AlreadyOverlappingSheeps)
+	for (AActor* Actor : AlreadyOverlappingActors)
 	{
-		AddSheepInVisualRange(Sheep);
+		AddActorInVisualRange(Actor);
 	}
 }
 
-void ASheepBot::AddSheepInVisualRange(AActor*& OtherActor)
+void ASheepBot::AddActorInVisualRange(AActor*& OtherActor)
 {
 	if (OtherActor && OtherActor != this)
 	{
@@ -274,10 +283,14 @@ void ASheepBot::AddSheepInVisualRange(AActor*& OtherActor)
 		{
 			SheepInVisualRange.AddUnique(SheepCharacter);
 		}
+		else if (AShepherdCharacter* ShepherdCharacter = Cast<AShepherdCharacter>(OtherActor))
+		{
+			Shepherd = ShepherdCharacter;
+		}
 	}
 }
 
-void ASheepBot::RemoveSheepInVisualRange(AActor*& OtherActor)
+void ASheepBot::RemoveActorInVisualRange(AActor*& OtherActor)
 {
 	if (OtherActor && OtherActor != this)
 	{
@@ -288,6 +301,10 @@ void ASheepBot::RemoveSheepInVisualRange(AActor*& OtherActor)
 		else if (ASheepCharacter* SheepCharacter = Cast<ASheepCharacter>(OtherActor))
 		{
 			SheepInVisualRange.Remove(SheepCharacter);
+		}
+		else if (AShepherdCharacter* ShepherdCharacter = Cast<AShepherdCharacter>(OtherActor))
+		{
+			Shepherd = nullptr;
 		}
 	}
 }

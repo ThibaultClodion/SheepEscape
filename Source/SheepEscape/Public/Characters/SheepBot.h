@@ -7,6 +7,7 @@
 #include "SheepBot.generated.h"
 
 class USphereComponent;
+class AShepherdCharacter;
 
 UCLASS()
 class SHEEPESCAPE_API ASheepBot : public ABaseCharacter
@@ -65,7 +66,7 @@ private:
 	void InterruptGazing();
 	bool IsGazing = false;
 
-	float MinGazingTime = 5.0f;
+	float MinGazingTime = 2.0f;
 	float MaxGazingTime = 20.0f;
 	FTimerHandle GazingTimer;
 
@@ -79,18 +80,19 @@ private:
 	void InterruptLeading();
 	bool IsLeading = false;
 
-	float MinLeadingTime = 0.5f;
-	float MaxLeadingTime = 2.0f;
+	float MinLeadingTime = 1.f;
+	float MaxLeadingTime = 5.0f;
 	FTimerHandle LeadingTimer;
 
 	FVector RandomLeadingInput = FVector::ZeroVector;
 
 	/** Boid Visual Sphere */
-	void AddingAlreadyOverlappingSheeps();
-	void AddSheepInVisualRange(AActor*& OtherActor);
-	void RemoveSheepInVisualRange(AActor*& OtherActor);
+	void AddingAlreadyOverlappingActors();
+	void AddActorInVisualRange(AActor*& OtherActor);
+	void RemoveActorInVisualRange(AActor*& OtherActor);
 
 	TArray<ABaseCharacter*> SheepInVisualRange;
+	AShepherdCharacter* Shepherd;
 	float VisualSphereRadius = 300.f;
 	float AvoidDistance = 200.f;
 };
