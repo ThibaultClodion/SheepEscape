@@ -40,5 +40,28 @@ void ACamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	MoveToCenterLocation(DeltaTime);
+	ZoomToSeeCharacters();
+}
+
+void ACamera::MoveToCenterLocation(float DeltaTime)
+{
+	FVector NewLocation = FMath::Lerp(GetActorLocation(), UGameplayStatics::GetActorArrayAverageLocation(Characters), DeltaTime * 2);
+	VisualSphere->SetWorldLocation(NewLocation);
+}
+
+void ACamera::ZoomToSeeCharacters()
+{
+	double MaxDistance = 0.0f;
+	for (AActor* Actor : Characters)
+	{
+		if (FVector::Dist(Actor->GetActorLocation(), GetActorLocation()) > MaxDistance)
+		{
+			MaxDistance = FVector::Dist(Actor->GetActorLocation(), GetActorLocation());
+		}
+	}
+
+	MaxDistance = FMath::Clamp(MaxDistance, MinArmLength, MaxArmLength);
+	SpringArm->TargetArmLength = MaxDistance;
 }
 

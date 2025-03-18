@@ -25,7 +25,15 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void UpdateCharacters();
 
+	UPROPERTY(EditDefaultsOnly, Category = "Parameters")
+	float MinArmLength = 1200.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Parameters")
+	float MaxArmLength = 2500.f;
+
 private:
+	void MoveToCenterLocation(float DeltaTime);
+	void ZoomToSeeCharacters();
+
 	TArray<AActor*> Characters;
 
 	UPROPERTY(VisibleAnywhere)

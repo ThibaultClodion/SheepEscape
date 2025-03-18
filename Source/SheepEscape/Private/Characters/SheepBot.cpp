@@ -137,7 +137,7 @@ void ASheepBot::UpdateBoidVelocity(float DeltaTime)
 {
 	// Get Boid Behavior Velocity
 	FVector TargetVelocity = BoidVelocity + Cohesion() + Separation() + Alignment();
-	// Smooth velocity changement
+	// Smooth velocity changes
 	BoidVelocity = FMath::Lerp(BoidVelocity, TargetVelocity, DeltaTime * Acceleration);
 	// Inertia
 	BoidVelocity *= 0.99f;
