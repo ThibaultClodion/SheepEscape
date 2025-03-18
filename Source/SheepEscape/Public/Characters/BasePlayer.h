@@ -26,6 +26,9 @@ protected:
 	virtual void BeginPlay() override;
 
 	/** Inputs */
+	UFUNCTION(BlueprintCallable)
+	void InitializeMappingContext();
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* CharacterMappingContext;
 
@@ -34,7 +37,4 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* BaseAction;
-
-private:
-	void InitializeMappingContext(APlayerController* PlayerController);
 };

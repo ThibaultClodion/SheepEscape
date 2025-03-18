@@ -9,11 +9,8 @@
 void ABasePlayer::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		InitializeMappingContext(PlayerController);
-	}
+	
+	InitializeMappingContext();
 }
 
 void ABasePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -37,10 +34,13 @@ void ABasePlayer::Move(const FInputActionValue& Value)
 
 void ABasePlayer::Action(const FInputActionValue& Value) {}
 
-void ABasePlayer::InitializeMappingContext(APlayerController* PlayerController)
+void ABasePlayer::InitializeMappingContext()
 {
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
-		Subsystem->AddMappingContext(CharacterMappingContext, 0);
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(CharacterMappingContext, 0);
+		}
 	}
 }
