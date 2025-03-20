@@ -33,6 +33,7 @@ protected:
 private:
 	void MoveToCenterLocation(float DeltaTime);
 	void ZoomToSeeCharacters();
+	float CustomDistanceWithRatio(FVector V1, FVector V2);
 
 	TArray<AActor*> Characters;
 
