@@ -3,6 +3,7 @@
 
 #include "Utils/Camera.h"
 #include "Characters/BaseCharacter.h"
+#include "Utils/BaseSign.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/SphereComponent.h"
 #include "Camera/CameraComponent.h"
@@ -28,11 +29,32 @@ void ACamera::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ACamera::UpdateCharacters()
+void ACamera::UpdateTargets()
 {
-	if (UWorld* World = GetWorld())
+	Targets.Empty();
+
+	// Add Characters
+	TArray<AActor*> CharacterTargets;
+	if (GetWorld() && AreCharactersTargets)
 	{
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseCharacter::StaticClass(), Characters);
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseCharacter::StaticClass(), CharacterTargets);
+
+		for(AActor* Character : CharacterTargets)
+		{
+			Targets.AddUnique(Character);
+		}
+	}
+
+	//Add Signs
+	TArray<AActor*> SignTargets;
+	if (GetWorld() && AreSignsTargets)
+	{
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseSign::StaticClass(), SignTargets);
+
+		for (AActor* Sign : SignTargets)
+		{
+			Targets.AddUnique(Sign);
+		}
 	}
 }
 
@@ -41,19 +63,19 @@ void ACamera::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	MoveToCenterLocation(DeltaTime);
-	ZoomToSeeCharacters();
+	ZoomToSeeTargets();
 }
 
 void ACamera::MoveToCenterLocation(float DeltaTime)
 {
-	FVector NewLocation = FMath::Lerp(GetActorLocation(), UGameplayStatics::GetActorArrayAverageLocation(Characters), DeltaTime * 2);
+	FVector NewLocation = FMath::Lerp(GetActorLocation(), UGameplayStatics::GetActorArrayAverageLocation(Targets), DeltaTime * 2);
 	VisualSphere->SetWorldLocation(NewLocation);
 }
 
-void ACamera::ZoomToSeeCharacters()
+void ACamera::ZoomToSeeTargets()
 {
 	double MaxDistance = 0.0f;
-	for (AActor* Actor : Characters)
+	for (AActor* Actor : Targets)
 	{
 		if (CustomDistanceWithRatio(GetActorLocation(), Actor->GetActorLocation()) > MaxDistance)
 		{

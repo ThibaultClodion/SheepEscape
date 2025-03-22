@@ -21,6 +21,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	/** Blueprints Events */
 	UFUNCTION(BlueprintImplementableEvent)
 	void AllPlayerIn();
 	UFUNCTION(BlueprintImplementableEvent)

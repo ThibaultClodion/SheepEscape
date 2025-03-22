@@ -23,14 +23,18 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateCharacters();
+	void UpdateTargets();
+
+	/** Define the targets of the camera */
+	UPROPERTY(EditDefaultsOnly)
+	bool AreCharactersTargets;
+	UPROPERTY(EditDefaultsOnly)
+	bool AreSignsTargets;
 
 private:
 	void MoveToCenterLocation(float DeltaTime);
-	void ZoomToSeeCharacters();
+	void ZoomToSeeTargets();
 	float CustomDistanceWithRatio(FVector V1, FVector V2);
-
-	TArray<AActor*> Characters;
 
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* VisualSphere;
@@ -43,6 +47,5 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* ViewCamera;
 
-
-
+	TArray<AActor*> Targets;
 };
