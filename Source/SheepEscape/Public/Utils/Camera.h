@@ -25,11 +25,6 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void UpdateCharacters();
 
-	UPROPERTY(EditDefaultsOnly, Category = "Parameters")
-	float MinArmLength = 1200.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Parameters")
-	float MaxArmLength = 2500.f;
-
 private:
 	void MoveToCenterLocation(float DeltaTime);
 	void ZoomToSeeCharacters();
@@ -42,8 +37,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArm;
+	float MinArmLength = 800.f;
+	float MaxArmLength = 3000.f;
 
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* ViewCamera;
+
+
 
 };
