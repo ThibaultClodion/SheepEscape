@@ -36,10 +36,12 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* OverlapSphere;
 
+	UPROPERTY(BlueprintReadOnly)
+	int PlayerIn = 0;
+
 private:
 	void AddingAlreadyOverlappingPlayer();
 
 	void PlayerJoin(ABasePlayer* Player);
 	void PlayerLeft(ABasePlayer* Player);
-	int PlayerIn = 0;
 };
