@@ -20,11 +20,6 @@ void ASheepCharacter::Action(const FInputActionValue& Value)
 	Heabutt();
 }
 
-void ASheepCharacter::Eliminate()
-{
-	UE_LOG(LogTemp, Warning, TEXT("SheepCharacter Eliminated !"));
-}
-
 void ASheepCharacter::Heabutt()
 {
 	TArray<FHitResult> BoxHits;

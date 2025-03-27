@@ -32,5 +32,3 @@ void ABaseCharacter::Pushed(FVector Direction, float HeadbuttForceScale)
 {
 	GetCharacterMovement()->AddImpulse(Direction.GetSafeNormal() * HeadbuttForceScale);
 }
-
-void ABaseCharacter::Eliminate() {}

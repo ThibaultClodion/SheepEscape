@@ -37,11 +37,6 @@ void ASheepBot::Tick(float DeltaTime)
 	}
 }
 
-void ASheepBot::Eliminate()
-{
-	UE_LOG(LogTemp, Warning, TEXT("SheepBot Eliminated !"));
-}
-
 void ASheepBot::Move(float DeltaTime)
 {
 	UpdateBoidVelocity(DeltaTime);

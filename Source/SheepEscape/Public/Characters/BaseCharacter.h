@@ -19,9 +19,9 @@ public:
 
 	void Pushed(FVector Direction, float HeadbuttForceScale);
 
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void Eliminate();
+
 protected:
 	virtual void BeginPlay() override;
-
-	UFUNCTION(BlueprintCallable)
-	virtual void Eliminate();
 };

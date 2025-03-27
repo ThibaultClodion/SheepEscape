@@ -20,9 +20,6 @@ public:
 	/** Inputs */
 	virtual void Action(const FInputActionValue& Value) override;
 
-protected:
-	virtual void Eliminate() override;
-
 private:
 	/** Attributes */
 	float MaxSpeed = 700.f;

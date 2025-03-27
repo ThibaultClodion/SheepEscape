@@ -21,10 +21,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	/** Character Function */
-	virtual void Eliminate() override;
-
-
 	/** Boid Visual Sphere */
 	void InitializeSphereOverlaps();
 
