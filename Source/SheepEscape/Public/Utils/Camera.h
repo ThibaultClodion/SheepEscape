@@ -41,7 +41,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArm;
+	UPROPERTY(EditDefaultsOnly)
 	float MinArmLength = 800.f;
+	UPROPERTY(EditDefaultsOnly)
 	float MaxArmLength = 3000.f;
 
 	UPROPERTY(VisibleAnywhere)

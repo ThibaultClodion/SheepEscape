@@ -6,9 +6,6 @@
 #include "Characters/BasePlayer.h"
 #include "ShepherdCharacter.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class SHEEPESCAPE_API AShepherdCharacter : public ABasePlayer
 {
@@ -23,4 +20,17 @@ public:
 private:
 	/** Attributes */
 	float MaxSpeed = 700.f;
+
+	/** CrookHit */
+	void CrookHit();
+	void CrookHitTrace(TArray<FHitResult>& BoxHits);
+
+	UPROPERTY(EditDefaultsOnly, Category = CrookHit)
+	FVector CrookHitTraceExtent = FVector(5.f);
+
+	UPROPERTY(VisibleAnywhere, Category = CrookHit)
+	USceneComponent* CrookHitTraceStart;
+
+	UPROPERTY(VisibleAnywhere, Category = CrookHit)
+	USceneComponent* CrookHitTraceEnd;
 };

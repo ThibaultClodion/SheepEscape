@@ -24,7 +24,7 @@ private:
 
 	/** Heabutt */
 	void Heabutt();
-	void HeadButtTrace(TArray<FHitResult>& HitResults);
+	void HeadButtTrace(TArray<FHitResult>& BoxHits);
 
 	UPROPERTY(EditDefaultsOnly, Category = Headbutt)
 	float HeadbuttForceScale = 500000.f;
