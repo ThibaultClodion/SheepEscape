@@ -11,5 +11,5 @@ enum EScoreAction : uint8
 	ESA_SheepElimateSheperd UMETA(DisplayName = "Sheep eliminate shepherd"),
 	ESA_SheepNotIdentify  UMETA(DisplayName = "Sheep not identify"),
 	ESA_ShepherdRescueSheep UMETA(DisplayName = "Shepherd rescue a sheep"),
-	ESA_ShepherdEliminateFakeSheep UMETA(DisplayName = "Shepherd eliminate a fake sheep")
+	ESA_ShepherdEliminatePlayerSheep UMETA(DisplayName = "Shepherd eliminate a player sheep")
 };

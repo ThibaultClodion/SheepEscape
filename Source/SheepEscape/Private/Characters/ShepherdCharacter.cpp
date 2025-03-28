@@ -2,6 +2,8 @@
 
 
 #include "Characters/ShepherdCharacter.h"
+#include "Characters/SheepCharacter.h"
+#include "Characters/SheepBot.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -27,9 +29,17 @@ void AShepherdCharacter::CrookHit()
 
 	for (FHitResult HitResult : BoxHits)
 	{
-		if (ABaseCharacter* BaseCharacter = Cast<ABaseCharacter>(HitResult.GetActor()))
+		//The hit actor is a sheep player
+		if (ASheepCharacter* SheepCharacter = Cast<ASheepCharacter>(HitResult.GetActor()))
 		{
-			BaseCharacter->Eliminate();
+			EliminatePlayer();
+			SheepCharacter->Eliminate();
+		}
+
+		//The hit actor is a sheep bot
+		if (ASheepBot* SheepBot = Cast<ASheepBot>(HitResult.GetActor()))
+		{
+			SheepBot->Eliminate();
 		}
 	}
 }

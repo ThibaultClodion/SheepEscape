@@ -17,6 +17,11 @@ public:
 	/** Inputs */
 	virtual void Action(const FInputActionValue& Value) override;
 
+protected:
+	/** Score Action */
+	UFUNCTION(BlueprintImplementableEvent)
+	void EliminatePlayer();
+
 private:
 	/** Attributes */
 	float MaxSpeed = 700.f;
