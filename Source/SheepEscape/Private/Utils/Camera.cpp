@@ -31,7 +31,7 @@ void ACamera::BeginPlay()
 
 void ACamera::UpdateTargets()
 {
-	Targets.Empty();
+	TArray<AActor*> NewTargets;
 
 	// Add Characters
 	TArray<AActor*> CharacterTargets;
@@ -41,7 +41,7 @@ void ACamera::UpdateTargets()
 
 		for(AActor* Character : CharacterTargets)
 		{
-			Targets.AddUnique(Character);
+			NewTargets.Add(Character);
 		}
 	}
 
@@ -53,9 +53,11 @@ void ACamera::UpdateTargets()
 
 		for (AActor* Sign : SignTargets)
 		{
-			Targets.AddUnique(Sign);
+			NewTargets.Add(Sign);
 		}
 	}
+
+	Targets = NewTargets;
 }
 
 void ACamera::Tick(float DeltaTime)
