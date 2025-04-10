@@ -2,6 +2,7 @@
 
 
 #include "Characters/BaseCharacter.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 ABaseCharacter::ABaseCharacter()
@@ -31,4 +32,16 @@ void ABaseCharacter::Tick(float DeltaTime)
 void ABaseCharacter::Pushed(FVector Direction, float HeadbuttForceScale)
 {
 	GetCharacterMovement()->AddImpulse(Direction.GetSafeNormal() * HeadbuttForceScale);
+}
+
+void ABaseCharacter::DisableCharacter()
+{
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		DisableInput(PlayerController);
+	}
+
+	PrimaryActorTick.bCanEverTick = false;
+	GetCapsuleComponent()->DestroyComponent();
+	SetActorHiddenInGame(true);
 }

@@ -22,6 +22,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void Eliminate();
 
+	UFUNCTION(BlueprintCallable)
+	void DisableCharacter();
+
 protected:
 	virtual void BeginPlay() override;
 };

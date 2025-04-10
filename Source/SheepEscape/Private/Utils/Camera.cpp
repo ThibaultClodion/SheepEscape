@@ -41,7 +41,10 @@ void ACamera::UpdateTargets()
 
 		for(AActor* Character : CharacterTargets)
 		{
-			NewTargets.Add(Character);
+			if (!Character->IsHidden())
+			{
+				NewTargets.Add(Character);
+			}
 		}
 	}
 
