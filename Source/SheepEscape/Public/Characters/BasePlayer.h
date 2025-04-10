@@ -25,6 +25,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(BlueprintReadOnly)
+	APlayerController* PlayerController;
+
 	/** Inputs */
 	UFUNCTION(BlueprintCallable)
 	void InitializeMappingContext();
