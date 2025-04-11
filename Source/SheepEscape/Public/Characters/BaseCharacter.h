@@ -7,6 +7,7 @@
 #include "InputActionValue.h"
 #include "BaseCharacter.generated.h"
 
+class ASheepCharacter;
 
 UCLASS()
 class SHEEPESCAPE_API ABaseCharacter : public ACharacter
@@ -17,14 +18,30 @@ public:
 	ABaseCharacter();
 	virtual void Tick(float DeltaTime) override;
 
-	void Pushed(FVector Direction, float HeadbuttForceScale);
-
+	/** Elimination */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void Eliminate();
 
 	UFUNCTION(BlueprintCallable)
 	void DisableCharacter();
 
+	UFUNCTION(BlueprintCallable)
+	bool IsEliminate();
+
+	/** Push */
+	void Pushed(ASheepCharacter* SheepCharacter, FVector Direction, float HeadbuttForceScale);
+	UPROPERTY(BlueprintReadOnly)
+	ASheepCharacter* PushedBy;
+
 protected:
 	virtual void BeginPlay() override;
+
+	/** Push Timers */
+	void StartPushTimer(ASheepCharacter* Pusher);
+	void StopPushTimer();
+	void InterruptPushTimer();
+
+	float PushedTime = 2.f;
+	FTimerHandle PushedTimer;
+
 };

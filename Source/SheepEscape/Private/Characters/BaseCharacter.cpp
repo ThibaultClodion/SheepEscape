@@ -29,11 +29,6 @@ void ABaseCharacter::Tick(float DeltaTime)
 
 }
 
-void ABaseCharacter::Pushed(FVector Direction, float HeadbuttForceScale)
-{
-	GetCharacterMovement()->AddImpulse(Direction.GetSafeNormal() * HeadbuttForceScale);
-}
-
 void ABaseCharacter::DisableCharacter()
 {
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -44,4 +39,35 @@ void ABaseCharacter::DisableCharacter()
 	PrimaryActorTick.bCanEverTick = false;
 	GetCapsuleComponent()->DestroyComponent();
 	SetActorHiddenInGame(true);
+}
+
+bool ABaseCharacter::IsEliminate()
+{
+	return IsHidden();
+}
+
+void ABaseCharacter::Pushed(ASheepCharacter* Pusher, FVector Direction, float HeadbuttForceScale)
+{
+	//Remember who push the character
+	InterruptPushTimer();
+	StartPushTimer(Pusher);
+
+	GetCharacterMovement()->AddImpulse(Direction.GetSafeNormal() * HeadbuttForceScale);
+}
+
+void ABaseCharacter::StartPushTimer(ASheepCharacter* Pusher)
+{
+	PushedBy = Pusher;
+	GetWorldTimerManager().SetTimer(PushedTimer, this, &ABaseCharacter::StopPushTimer, PushedTime);
+}
+
+void ABaseCharacter::StopPushTimer()
+{
+	PushedBy = NULL;
+}
+
+void ABaseCharacter::InterruptPushTimer()
+{
+	StopPushTimer();
+	GetWorldTimerManager().ClearTimer(PushedTimer);
 }

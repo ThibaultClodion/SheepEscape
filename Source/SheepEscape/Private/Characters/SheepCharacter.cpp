@@ -29,7 +29,7 @@ void ASheepCharacter::Heabutt()
 	{
 		if (ABaseCharacter* BaseCharacter = Cast<ABaseCharacter>(HitResult.GetActor()))
 		{
-			BaseCharacter->Pushed((HitResult.Location - GetActorLocation()),HeadbuttForceScale);
+			BaseCharacter->Pushed(this, (HitResult.Location - GetActorLocation()),HeadbuttForceScale);
 		}
 	}
 }
