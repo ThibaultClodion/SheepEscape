@@ -11,7 +11,6 @@
 ACamera::ACamera()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
 	SetupVisualSphere();
 	SetupSpringArm();
 	SetupViewCamera();

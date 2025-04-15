@@ -4,6 +4,7 @@
 #include "Characters/ShepherdCharacter.h"
 #include "Characters/SheepCharacter.h"
 #include "Characters/SheepBot.h"
+#include "Managers/MainGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -22,9 +23,33 @@ void AShepherdCharacter::SetupCrookHitTraces()
 	CrookHitTraceEnd->SetupAttachment(GetRootComponent());
 }
 
+void AShepherdCharacter::Eliminate()
+{
+	if (IsEliminate()) return;
+
+	Super::Eliminate();
+
+	if (PushedBy) PushedBy->AddEliminateShepherdAction();
+
+	UMainGameInstance* GameInstance = Cast<UMainGameInstance>(GetGameInstance());
+	GameInstance->ShepherdElimination();
+}
+
 void AShepherdCharacter::Action(const FInputActionValue& Value)
 {
 	CrookHit();
+}
+
+void AShepherdCharacter::AddRescueSheepAction()
+{
+	UMainGameInstance* GameInstance = Cast<UMainGameInstance>(GetGameInstance());
+	GameInstance->AddAction(PlayerController, EScoreAction::ESA_ShepherdRescueSheep);
+}
+
+void AShepherdCharacter::AddEliminatePlayerAction()
+{
+	UMainGameInstance* GameInstance = Cast<UMainGameInstance>(GetGameInstance());
+	GameInstance->AddAction(PlayerController, EScoreAction::ESA_ShepherdEliminatePlayerSheep);
 }
 
 void AShepherdCharacter::CrookHit()
@@ -37,7 +62,7 @@ void AShepherdCharacter::CrookHit()
 		//The hit actor is a sheep player
 		if (ASheepCharacter* SheepCharacter = Cast<ASheepCharacter>(HitResult.GetActor()))
 		{
-			EliminatePlayer();
+			AddEliminatePlayerAction();
 			SheepCharacter->Eliminate();
 		}
 

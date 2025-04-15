@@ -7,8 +7,8 @@
 UENUM(BlueprintType)
 enum EScoreAction : uint8
 {
-	ESA_SheepElimateSheep UMETA(DisplayName = "Sheep eliminate other sheep"),
-	ESA_SheepElimateSheperd UMETA(DisplayName = "Sheep eliminate shepherd"),
+	ESA_SheepEliminateSheep UMETA(DisplayName = "Sheep eliminate other sheep"),
+	ESA_SheepEliminateSheperd UMETA(DisplayName = "Sheep eliminate shepherd"),
 	ESA_SheepSurvive  UMETA(DisplayName = "Sheep player survive"),
 	ESA_ShepherdRescueSheep UMETA(DisplayName = "Shepherd rescue a sheep"),
 	ESA_ShepherdEliminatePlayerSheep UMETA(DisplayName = "Shepherd eliminate a player sheep")

@@ -20,6 +20,8 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void Eliminate() override;
+
 protected:
 	virtual void BeginPlay() override;
 

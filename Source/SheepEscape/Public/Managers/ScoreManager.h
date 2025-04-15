@@ -22,6 +22,7 @@ public:
 	TMap<EScoreAction, int32> ActionToScoreMap;
 
 	// Map that stock the actions that have been done for each player
+	UFUNCTION(BlueprintCallable)
 	void InitializePlayerActions();
 	TMap<int32, TArray<EScoreAction>> PlayerActions;
 
@@ -32,8 +33,12 @@ public:
 	/** Add Scores */
 	UFUNCTION(BlueprintCallable)
 	void AddAction(int32 PlayerID, EScoreAction Action);
+
 	UFUNCTION(BlueprintCallable)
 	void AddScores();
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveActions(int32 PlayerID);
 
 	/** Temporary Display */
 	UFUNCTION(BlueprintCallable)

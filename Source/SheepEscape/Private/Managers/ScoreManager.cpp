@@ -14,8 +14,8 @@ void UScoreManager::InitializeActionToScoreMap()
 {
 	ActionToScoreMap.Empty();
 
-	ActionToScoreMap.Add(EScoreAction::ESA_SheepElimateSheep, 2);
-	ActionToScoreMap.Add(EScoreAction::ESA_SheepElimateSheperd, 10);
+	ActionToScoreMap.Add(EScoreAction::ESA_SheepEliminateSheep, 2);
+	ActionToScoreMap.Add(EScoreAction::ESA_SheepEliminateSheperd, 10);
 	ActionToScoreMap.Add(EScoreAction::ESA_SheepSurvive, 4);
 	ActionToScoreMap.Add(EScoreAction::ESA_ShepherdEliminatePlayerSheep, 4);
 	ActionToScoreMap.Add(EScoreAction::ESA_ShepherdRescueSheep, 1);
@@ -61,6 +61,14 @@ void UScoreManager::AddScores()
 			}
 		}
 		PlayerActions[i].Empty();
+	}
+}
+
+void UScoreManager::RemoveActions(int32 PlayerID)
+{
+	if (PlayerActions.Contains(PlayerID))
+	{
+		PlayerActions[PlayerID].Empty();
 	}
 }
 

@@ -15,13 +15,15 @@ public:
 	AShepherdCharacter();
 	void SetupCrookHitTraces();
 
+	virtual void Eliminate() override;
+
 	/** Inputs */
 	virtual void Action(const FInputActionValue& Value) override;
 
-protected:
-	/** Score Action */
-	UFUNCTION(BlueprintImplementableEvent)
-	void EliminatePlayer();
+	/** Actions */
+	UFUNCTION(BlueprintCallable)
+	void AddRescueSheepAction();
+	void AddEliminatePlayerAction();
 
 private:
 	/** Attributes */

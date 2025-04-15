@@ -7,6 +7,7 @@
 #include "BaseWeel.generated.h"
 
 class USphereComponent;
+class UMainGameInstance;
 
 UCLASS()
 class SHEEPESCAPE_API ABaseWeel : public AActor
@@ -33,6 +34,8 @@ protected:
 	int NbSheepsInside;
 
 private:
+	UMainGameInstance* GameInstance;
+
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* Mesh;
 

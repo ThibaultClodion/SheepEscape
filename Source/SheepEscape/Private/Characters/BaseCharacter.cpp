@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Characters/BaseCharacter.h"
+#include "Characters/SheepCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -19,7 +20,6 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void ABaseCharacter::Tick(float DeltaTime)
@@ -28,8 +28,10 @@ void ABaseCharacter::Tick(float DeltaTime)
 
 }
 
-void ABaseCharacter::DisableCharacter()
+void ABaseCharacter::Eliminate()
 {
+	if (IsEliminate()) return;
+
 	// If it's a player, disable his input
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{

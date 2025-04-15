@@ -2,6 +2,7 @@
 
 #include "Characters/SheepCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Managers/MainGameInstance.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 ASheepCharacter::ASheepCharacter()
@@ -19,9 +20,39 @@ void ASheepCharacter::SetupHeadbuttTraces()
 	HeadbuttTraceEnd->SetupAttachment(GetRootComponent());
 }
 
+void ASheepCharacter::Eliminate()
+{
+	if (IsEliminate()) return;
+
+	Super::Eliminate();
+
+	if (PushedBy) PushedBy->AddEliminateSheepAction();
+
+	UMainGameInstance* GameInstance = Cast<UMainGameInstance>(GetGameInstance());
+	GameInstance->SheepElimination();
+}
+
 void ASheepCharacter::Action(const FInputActionValue& Value)
 {
 	Heabutt();
+}
+
+void ASheepCharacter::AddEliminateShepherdAction()
+{
+	UMainGameInstance* GameInstance = Cast<UMainGameInstance>(GetGameInstance());
+	GameInstance->AddAction(PlayerController, EScoreAction::ESA_SheepEliminateSheperd);
+}
+
+void ASheepCharacter::AddEliminateSheepAction()
+{
+	UMainGameInstance* GameInstance = Cast<UMainGameInstance>(GetGameInstance());
+	GameInstance->AddAction(PlayerController, EScoreAction::ESA_SheepEliminateSheep);
+}
+
+void ASheepCharacter::AddSurviveAction()
+{
+	UMainGameInstance* GameInstance = Cast<UMainGameInstance>(GetGameInstance());
+	GameInstance->AddAction(PlayerController, EScoreAction::ESA_SheepSurvive);
 }
 
 void ASheepCharacter::Heabutt()

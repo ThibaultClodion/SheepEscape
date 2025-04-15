@@ -6,6 +6,7 @@
 #include "Characters/SheepCharacter.h"
 #include "Characters/ShepherdCharacter.h"
 #include "Components/SphereComponent.h"
+#include "Managers/MainGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 ASheepBot::ASheepBot()
@@ -39,6 +40,20 @@ void ASheepBot::Tick(float DeltaTime)
 	{
 		Move(DeltaTime);
 	}
+}
+
+void ASheepBot::Eliminate()
+{
+	if (IsEliminate()) return;
+
+	Super::Eliminate();
+
+	if(PushedBy) PushedBy->AddEliminateSheepAction();
+
+	UMainGameInstance* GameInstance = Cast<UMainGameInstance>(GetGameInstance());
+	GameInstance->SheepElimination();
+
+	Destroy();
 }
 
 void ASheepBot::Move(float DeltaTime)

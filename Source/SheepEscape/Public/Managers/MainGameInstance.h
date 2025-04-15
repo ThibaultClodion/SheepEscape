@@ -17,4 +17,16 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	UScoreManager* ScoreManager;
+
+	/** Actions and Score */
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void AddAction(APlayerController* PlayerController, EScoreAction Action);
+	UFUNCTION(BlueprintImplementableEvent)
+	void SheepElimination();
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShepherdElimination();
+
+	/** Game Data */
+	UPROPERTY(BlueprintReadWrite)
+	int NbSheeps;
 };

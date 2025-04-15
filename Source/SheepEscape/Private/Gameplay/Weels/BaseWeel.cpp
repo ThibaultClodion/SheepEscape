@@ -4,6 +4,7 @@
 #include "Components/SphereComponent.h"
 #include "Characters/BaseCharacter.h"
 #include "Characters/SheepBot.h"
+#include "Managers/MainGameInstance.h"
 #include "Characters/SheepCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -40,8 +41,11 @@ void ABaseWeel::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	NbSheepsInside = 0;
 	InitializeOverlapSphere();
 	AddingAlreadyOverlappingCharacter();
+
+	GameInstance = Cast<UMainGameInstance>(GetGameInstance());
 }
 
 void ABaseWeel::InitializeOverlapSphere()
@@ -89,8 +93,8 @@ void ABaseWeel::ActorJoin(AActor* Actor)
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASheepBot::StaticClass(), SheepsBot);
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASheepCharacter::StaticClass(), SheepsPlayer);
 	}
-
-	if (NbSheepsInside == SheepsBot.Num() + SheepsPlayer.Num())
+	
+	if (NbSheepsInside == GameInstance->NbSheeps)
 	{
 		AllSheepsIn();
 	}
@@ -111,7 +115,7 @@ void ABaseWeel::ActorLeft(AActor* Actor)
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASheepCharacter::StaticClass(), SheepsPlayer);
 	}
 
-	if (NbSheepsInside == SheepsBot.Num() + SheepsPlayer.Num() - 1)
+	if (NbSheepsInside == GameInstance->NbSheeps - 1)
 	{
 		CancelAllSheepsIn();
 	}

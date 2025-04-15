@@ -8,6 +8,7 @@
 #include "BaseCharacter.generated.h"
 
 class ASheepCharacter;
+class UMainGameInstance;
 
 UCLASS()
 class SHEEPESCAPE_API ABaseCharacter : public ACharacter
@@ -19,11 +20,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	/** Elimination */
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void Eliminate();
-
 	UFUNCTION(BlueprintCallable)
-	void DisableCharacter();
+	virtual void Eliminate();
 
 	UFUNCTION(BlueprintCallable)
 	bool IsEliminate();

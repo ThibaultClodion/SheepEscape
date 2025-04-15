@@ -16,8 +16,16 @@ public:
 	ASheepCharacter();
 	void SetupHeadbuttTraces();
 
+	virtual void Eliminate() override;
+
 	/** Inputs */
 	virtual void Action(const FInputActionValue& Value) override;
+
+	/** Actions */
+	void AddEliminateShepherdAction();
+	void AddEliminateSheepAction();
+	UFUNCTION(BlueprintCallable)
+	void AddSurviveAction();
 
 private:
 	/** Attributes */
@@ -38,5 +46,4 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Headbutt)
 	USceneComponent* HeadbuttTraceEnd;
-
 };
