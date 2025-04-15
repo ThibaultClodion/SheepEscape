@@ -10,6 +10,11 @@ ABaseSign::ABaseSign()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	SetupOverlapSphere();
+}
+
+void ABaseSign::SetupOverlapSphere()
+{
 	OverlapSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Overlap Sphere"));
 	OverlapSphere->SetupAttachment(GetRootComponent());
 	OverlapSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
@@ -20,15 +25,19 @@ void ABaseSign::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	OverlapSphere->OnComponentBeginOverlap.AddDynamic(this, &ABaseSign::OnVisualSphereOverlap);
-	OverlapSphere->OnComponentEndOverlap.AddDynamic(this, &ABaseSign::OnVisualSphereEndOverlap);
-
+	InitializeOverlapSphere();
 	AddingAlreadyOverlappingPlayer();
 }
 
 void ABaseSign::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ABaseSign::InitializeOverlapSphere()
+{
+	OverlapSphere->OnComponentBeginOverlap.AddDynamic(this, &ABaseSign::OnVisualSphereOverlap);
+	OverlapSphere->OnComponentEndOverlap.AddDynamic(this, &ABaseSign::OnVisualSphereEndOverlap);
 }
 
 void ABaseSign::OnVisualSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

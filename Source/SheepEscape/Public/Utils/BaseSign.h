@@ -16,6 +16,8 @@ class SHEEPESCAPE_API ABaseSign : public AActor
 	
 public:	
 	ABaseSign();
+	void SetupOverlapSphere();
+
 	virtual void Tick(float DeltaTime) override;
 
 protected:
@@ -27,21 +29,22 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void CancelAllPlayerIn();
 
+	UPROPERTY(BlueprintReadOnly)
+	int PlayerIn = 0;
+
+private:
 	/** Overlap Sphere */
+	UPROPERTY(VisibleAnywhere)
+	USphereComponent* OverlapSphere;
+
+	void InitializeOverlapSphere();
+
 	UFUNCTION()
 	virtual void OnVisualSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	virtual void OnVisualSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	UPROPERTY(VisibleAnywhere)
-	USphereComponent* OverlapSphere;
-
-	UPROPERTY(BlueprintReadOnly)
-	int PlayerIn = 0;
-
-private:
 	void AddingAlreadyOverlappingPlayer();
-
 	void PlayerJoin(ABasePlayer* Player);
 	void PlayerLeft(ABasePlayer* Player);
 };

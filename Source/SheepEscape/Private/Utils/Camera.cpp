@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Utils/Camera.h"
 #include "Characters/BaseCharacter.h"
 #include "Utils/BaseSign.h"
@@ -13,20 +12,41 @@ ACamera::ACamera()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	VisualSphere = CreateDefaultSubobject<USphereComponent>(TEXT("VisualSphere"));
-	SetRootComponent(VisualSphere);
+	SetupVisualSphere();
+	SetupSpringArm();
+	SetupViewCamera();
+}
 
+void ACamera::SetupViewCamera()
+{
+	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
+	ViewCamera->SetupAttachment(SpringArm);
+}
+
+void ACamera::SetupSpringArm()
+{
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetRootComponent());
 	SpringArm->TargetArmLength = 2500.f;
+}
 
-	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
-	ViewCamera->SetupAttachment(SpringArm);
+void ACamera::SetupVisualSphere()
+{
+	VisualSphere = CreateDefaultSubobject<USphereComponent>(TEXT("VisualSphere"));
+	SetRootComponent(VisualSphere);
 }
 
 void ACamera::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ACamera::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	MoveToCenterLocation(DeltaTime);
+	ZoomToSeeTargets();
 }
 
 void ACamera::UpdateTargets()
@@ -35,7 +55,7 @@ void ACamera::UpdateTargets()
 
 	// Add Characters
 	TArray<AActor*> CharacterTargets;
-	if (GetWorld() && AreCharactersTargets)
+	if (GetWorld())
 	{
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseCharacter::StaticClass(), CharacterTargets);
 
@@ -50,7 +70,7 @@ void ACamera::UpdateTargets()
 
 	//Add Signs
 	TArray<AActor*> SignTargets;
-	if (GetWorld() && AreSignsTargets)
+	if (GetWorld())
 	{
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseSign::StaticClass(), SignTargets);
 
@@ -61,14 +81,6 @@ void ACamera::UpdateTargets()
 	}
 
 	Targets = NewTargets;
-}
-
-void ACamera::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	MoveToCenterLocation(DeltaTime);
-	ZoomToSeeTargets();
 }
 
 void ACamera::MoveToCenterLocation(float DeltaTime)

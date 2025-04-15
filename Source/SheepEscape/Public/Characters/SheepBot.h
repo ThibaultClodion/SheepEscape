@@ -23,9 +23,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere)
-	USphereComponent* VisualSphere;
-
 private:
 	void Move(float DeltaTime);
 
@@ -76,6 +73,9 @@ private:
 	FVector RandomLeadingInput = FVector::ZeroVector;
 
 	/** Boid Visual Sphere */
+	UPROPERTY(VisibleAnywhere)
+	USphereComponent* VisualSphere;
+
 	void InitializeSphereOverlaps();
 
 	UFUNCTION()
