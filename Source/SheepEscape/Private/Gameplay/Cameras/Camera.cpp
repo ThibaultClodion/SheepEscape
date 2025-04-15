@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Utils/Camera.h"
+#include "Gameplay/Cameras/Camera.h"
 #include "Characters/BaseCharacter.h"
-#include "Utils/BaseSign.h"
+#include "Gameplay/Signs/BaseSign.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/SphereComponent.h"
 #include "Camera/CameraComponent.h"

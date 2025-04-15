@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Utils/BaseSign.h"
+#include "Gameplay/Signs/BaseSign.h"
 #include "Components/SphereComponent.h"
 #include "Characters/BasePlayer.h"
 #include "Kismet/GameplayStatics.h"
