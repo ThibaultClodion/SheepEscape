@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Characters/BaseCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -31,12 +30,15 @@ void ABaseCharacter::Tick(float DeltaTime)
 
 void ABaseCharacter::DisableCharacter()
 {
+	// If it's a player, disable his input
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		DisableInput(PlayerController);
 	}
 
+	// Disable the character movement, collision and visibility
 	PrimaryActorTick.bCanEverTick = false;
+	GetCharacterMovement()->StopMovementImmediately();
 	GetCapsuleComponent()->DestroyComponent();
 	SetActorHiddenInGame(true);
 }
@@ -48,7 +50,7 @@ bool ABaseCharacter::IsEliminate()
 
 void ABaseCharacter::Pushed(ASheepCharacter* Pusher, FVector Direction, float HeadbuttForceScale)
 {
-	//Remember who push the character
+	// Save the pusher
 	InterruptPushTimer();
 	StartPushTimer(Pusher);
 

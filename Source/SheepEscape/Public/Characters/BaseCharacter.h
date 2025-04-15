@@ -30,6 +30,7 @@ public:
 
 	/** Push */
 	void Pushed(ASheepCharacter* SheepCharacter, FVector Direction, float HeadbuttForceScale);
+
 	UPROPERTY(BlueprintReadOnly)
 	ASheepCharacter* PushedBy;
 

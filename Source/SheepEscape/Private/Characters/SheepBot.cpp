@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Characters/SheepBot.h"
 #include "AIController.h"
 #include "Components/CapsuleComponent.h"
@@ -13,6 +12,11 @@ ASheepBot::ASheepBot()
 {
 	GetCharacterMovement()->MaxWalkSpeed = MaxSpeed;
 
+	SetupVisualSphere();
+}
+
+void ASheepBot::SetupVisualSphere()
+{
 	VisualSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Visual Sphere"));
 	VisualSphere->SetupAttachment(GetRootComponent());
 	VisualSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
@@ -66,6 +70,18 @@ void ASheepBot::BoidMovement()
 	{
 		StartGazing();
 	}
+}
+
+void ASheepBot::UpdateBoidVelocity(float DeltaTime)
+{
+	// Get Boid Behavior Velocity
+	FVector TargetVelocity = BoidVelocity + Cohesion() + Separation() + Alignment();
+	// Smooth velocity changes
+	BoidVelocity = FMath::Lerp(BoidVelocity, TargetVelocity, DeltaTime * Acceleration);
+	// Inertia
+	BoidVelocity *= 0.99f;
+	// Clamp Size of Speed to MaxSpeed
+	BoidVelocity = BoidVelocity.GetClampedToSize(0.f, MaxSpeed);
 }
 
 FVector ASheepBot::Cohesion()
@@ -126,18 +142,6 @@ FVector ASheepBot::Alignment()
 	AverageVelocity /= SheepInVisualRange.Num();
 
 	return (AverageVelocity - GetVelocity()) * AlignmentFactor;
-}
-
-void ASheepBot::UpdateBoidVelocity(float DeltaTime)
-{
-	// Get Boid Behavior Velocity
-	FVector TargetVelocity = BoidVelocity + Cohesion() + Separation() + Alignment();
-	// Smooth velocity changes
-	BoidVelocity = FMath::Lerp(BoidVelocity, TargetVelocity, DeltaTime * Acceleration);
-	// Inertia
-	BoidVelocity *= 0.99f;
-	// Clamp Size of Speed to MaxSpeed
-	BoidVelocity = BoidVelocity.GetClampedToSize(0.f, MaxSpeed);
 }
 
 void ASheepBot::GazingMovement()

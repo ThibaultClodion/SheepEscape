@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Characters/BasePlayer.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
@@ -32,7 +31,7 @@ void ABasePlayer::Move(const FInputActionValue& Value)
 	}
 }
 
-void ABasePlayer::Action(const FInputActionValue& Value) {}
+void ABasePlayer::Action(const FInputActionValue& Value){}
 
 void ABasePlayer::InitializeMappingContext()
 {

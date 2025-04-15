@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Characters/SheepCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -9,6 +8,11 @@ ASheepCharacter::ASheepCharacter()
 {
 	GetCharacterMovement()->MaxWalkSpeed = MaxSpeed;
 
+	SetupHeadbuttTraces();
+}
+
+void ASheepCharacter::SetupHeadbuttTraces()
+{
 	HeadbuttTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Heabutt Trace Start"));
 	HeadbuttTraceStart->SetupAttachment(GetRootComponent());
 	HeadbuttTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Heabutt Trace End"));

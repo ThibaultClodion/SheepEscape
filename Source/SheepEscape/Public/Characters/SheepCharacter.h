@@ -14,6 +14,7 @@ class SHEEPESCAPE_API ASheepCharacter : public ABasePlayer
 	
 public:
 	ASheepCharacter();
+	void SetupHeadbuttTraces();
 
 	/** Inputs */
 	virtual void Action(const FInputActionValue& Value) override;

@@ -13,6 +13,7 @@ class SHEEPESCAPE_API AShepherdCharacter : public ABasePlayer
 	
 public:
 	AShepherdCharacter();
+	void SetupCrookHitTraces();
 
 	/** Inputs */
 	virtual void Action(const FInputActionValue& Value) override;

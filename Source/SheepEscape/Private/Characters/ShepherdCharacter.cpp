@@ -11,6 +11,11 @@ AShepherdCharacter::AShepherdCharacter()
 {
 	GetCharacterMovement()->MaxWalkSpeed = MaxSpeed;
 
+	SetupCrookHitTraces();
+}
+
+void AShepherdCharacter::SetupCrookHitTraces()
+{
 	CrookHitTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Heabutt Trace Start"));
 	CrookHitTraceStart->SetupAttachment(GetRootComponent());
 	CrookHitTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Heabutt Trace End"));

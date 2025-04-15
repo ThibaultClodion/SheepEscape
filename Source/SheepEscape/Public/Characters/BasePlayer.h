@@ -25,6 +25,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	/** Essentials Variables */
 	UPROPERTY(BlueprintReadOnly)
 	APlayerController* PlayerController;
 

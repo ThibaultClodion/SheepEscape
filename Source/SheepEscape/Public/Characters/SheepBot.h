@@ -16,18 +16,12 @@ class SHEEPESCAPE_API ASheepBot : public ABaseCharacter
 
 public:
 	ASheepBot();
+	void SetupVisualSphere();
+
 	virtual void Tick(float DeltaTime) override;
 
 protected:
 	virtual void BeginPlay() override;
-
-	/** Boid Visual Sphere */
-	void InitializeSphereOverlaps();
-
-	UFUNCTION()
-	virtual void OnVisualSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-	virtual void OnVisualSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* VisualSphere;
@@ -43,16 +37,15 @@ private:
 	/** Boids Behavior */
 	void BoidMovement();
 
+	void UpdateBoidVelocity(float DeltaTime);
+	FVector BoidVelocity;
+
 	FVector Cohesion();
 	FVector Separation();
 	FVector Alignment();
 	float CohesionFactor = 0.05f;
 	float SeparationFactor = 0.15f;
 	float AlignmentFactor = 0.08f;
-
-
-	void UpdateBoidVelocity(float DeltaTime);
-	FVector BoidVelocity;
 
 	/** Gazing Behavior */
 	void GazingMovement();
@@ -83,6 +76,13 @@ private:
 	FVector RandomLeadingInput = FVector::ZeroVector;
 
 	/** Boid Visual Sphere */
+	void InitializeSphereOverlaps();
+
+	UFUNCTION()
+	virtual void OnVisualSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	virtual void OnVisualSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 	void AddingAlreadyOverlappingActors();
 	void AddActorInVisualRange(AActor*& OtherActor);
 	void RemoveActorInVisualRange(AActor*& OtherActor);
