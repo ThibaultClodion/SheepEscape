@@ -31,9 +31,12 @@ private:
 	/** Attributes */
 	float MaxSpeed = 500.f;
 	float Acceleration = 500.f;
-	float MinVelocityLengthToMove = 0.07f;
+	UPROPERTY(EditDefaultsOnly, Category = "Boid Behavior")
+	float Inertia = 0.99f;
+	UPROPERTY(EditDefaultsOnly, Category = "Boid Behavior")
+	float MinVelocityLengthToMove = 0.12f;
 
-	/** Boids Behavior */
+	/** Boid Behavior */
 	void BoidMovement();
 
 	void UpdateBoidVelocity(float DeltaTime);
@@ -42,9 +45,12 @@ private:
 	FVector Cohesion();
 	FVector Separation();
 	FVector Alignment();
+	UPROPERTY(EditDefaultsOnly, Category = "Boid Behavior")
 	float CohesionFactor = 0.05f;
-	float SeparationFactor = 0.15f;
-	float AlignmentFactor = 0.08f;
+	UPROPERTY(EditDefaultsOnly, Category = "Boid Behavior")
+	float SeparationFactor = 0.2f;
+	UPROPERTY(EditDefaultsOnly, Category = "Boid Behavior")
+	float AlignmentFactor = 0.1f;
 
 	/** Gazing Behavior */
 	void GazingMovement();
@@ -54,11 +60,15 @@ private:
 	void InterruptGazing();
 	bool IsGazing = false;
 
-	float MinGazingTime = 2.0f;
+	float MinGazingTime = 3.0f;
 	float MaxGazingTime = 20.0f;
 	FTimerHandle GazingTimer;
 
-	float MinVelocityLengthToStopGazing = 0.15f;
+	UPROPERTY(EditDefaultsOnly, Category = "Boid Behavior")
+	float MinVelocityLengthToStopGazing = 0.35f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boid Behavior")
+	float GazingAlignmentFactor = 0.3f;
 
 	/** Leading Behavior */
 	void LeadMovement();
@@ -89,8 +99,24 @@ private:
 	void AddActorInVisualRange(AActor*& OtherActor);
 	void RemoveActorInVisualRange(AActor*& OtherActor);
 
+	/** Randomize Visual and Avoid Ranges */
+	void RandomizeRange();
+	FTimerHandle RandomizeRangeTimer;
+	float RandomizeTime = 5.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boid Behavior")
+	float MaxVisualRange = 600.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Boid Behavior")
+	float MinVisualRange = 400.f;
+	float VisualRange;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boid Behavior")
+	float MaxAvoidRange = 265.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Boid Behavior")
+	float MinAvoidRange = 235.f;
+	float AvoidRange;
+
+	/** Sheep in Visual Range and Shepherd */
 	TArray<ABaseCharacter*> SheepInVisualRange;
 	AShepherdCharacter* Shepherd;
-	float VisualSphereRadius = 300.f;
-	float AvoidDistance = 200.f;
 };

@@ -22,13 +22,14 @@ void ASheepBot::SetupVisualSphere()
 	VisualSphere->SetupAttachment(GetRootComponent());
 	VisualSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	VisualSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-	VisualSphere->SetSphereRadius(VisualSphereRadius);
+	VisualSphere->SetSphereRadius(MaxVisualRange);
 }
 
 void ASheepBot::BeginPlay()
 {
 	Super::BeginPlay();
 
+	RandomizeRange();
 	InitializeSphereOverlaps();
 }
 
@@ -94,7 +95,7 @@ void ASheepBot::UpdateBoidVelocity(float DeltaTime)
 	// Smooth velocity changes
 	BoidVelocity = FMath::Lerp(BoidVelocity, TargetVelocity, DeltaTime * Acceleration);
 	// Inertia
-	BoidVelocity *= 0.99f;
+	BoidVelocity *= Inertia;
 	// Clamp Size of Speed to MaxSpeed
 	BoidVelocity = BoidVelocity.GetClampedToSize(0.f, MaxSpeed);
 }
@@ -103,15 +104,25 @@ FVector ASheepBot::Cohesion()
 {
 	if (SheepInVisualRange.Num() == 0) return FVector::ZeroVector;
 
+	// Get the center of the herd
 	FVector HerdCenter = FVector::ZeroVector;
+	int nbSheepInVisualRange = 0;
+
 	for (ABaseCharacter* Sheep : SheepInVisualRange)
 	{
-		HerdCenter += Sheep->GetActorLocation();
+		float Distance = FVector::Distance(GetActorLocation(), Sheep->GetActorLocation());
+		if (Distance < VisualRange)
+		{
+			HerdCenter += Sheep->GetActorLocation();
+			nbSheepInVisualRange++;
+		}
 	}
-	HerdCenter /= SheepInVisualRange.Num();
 
-	// Run to the herd center if it's far to visual radius
-	if (FVector::Distance(GetActorLocation(), HerdCenter) > VisualSphereRadius*1.8f)
+	if (nbSheepInVisualRange == 0) return FVector::ZeroVector;
+	HerdCenter /= nbSheepInVisualRange;
+
+	// Run faster to the herd center if it's far to visual radius
+	if (FVector::Distance(GetActorLocation(), HerdCenter) > VisualRange*1.8f)
 	{
 		return (HerdCenter - GetActorLocation()).GetSafeNormal() * MaxSpeed;
 	}
@@ -128,10 +139,10 @@ FVector ASheepBot::Separation()
 	for (ABaseCharacter* Sheep : SheepInVisualRange)
 	{
 		float Distance = FVector::Distance(GetActorLocation(), Sheep->GetActorLocation());
-		if (Distance < AvoidDistance)
+		if (Distance < AvoidRange)
 		{
 			// Avoid brutal collision
-			Move += (GetActorLocation() - Sheep->GetActorLocation()).GetSafeNormal() * (AvoidDistance - Distance);
+			Move += (GetActorLocation() - Sheep->GetActorLocation()).GetSafeNormal() * (AvoidRange - Distance);
 		}
 	}
 
@@ -139,7 +150,10 @@ FVector ASheepBot::Separation()
 	if (Shepherd)
 	{
 		float Distance = FVector::Distance(GetActorLocation(), Shepherd->GetActorLocation());
-		Move += (GetActorLocation() - Shepherd->GetActorLocation()).GetSafeNormal() * (VisualSphereRadius - Distance);
+		if (Distance < VisualRange)
+		{
+			Move += (GetActorLocation() - Shepherd->GetActorLocation()).GetSafeNormal() * (VisualRange - Distance);
+		}
 	}
 
 	return Move * SeparationFactor;
@@ -149,14 +163,32 @@ FVector ASheepBot::Alignment()
 {
 	if (SheepInVisualRange.Num() == 0) return FVector::ZeroVector;
 
+	// Get the average velocity of the herd
 	FVector AverageVelocity = FVector::ZeroVector;
+	int nbSheepInVisualRange = 0;
+
 	for (ABaseCharacter* Sheep : SheepInVisualRange)
 	{
-		AverageVelocity += Sheep->GetVelocity();
+		float Distance = FVector::Distance(GetActorLocation(), Sheep->GetActorLocation());
+		if (Distance < VisualRange)
+		{
+			AverageVelocity += Sheep->GetVelocity();
+			nbSheepInVisualRange++;
+		}
 	}
-	AverageVelocity /= SheepInVisualRange.Num();
 
-	return (AverageVelocity - GetVelocity()) * AlignmentFactor;
+	if (nbSheepInVisualRange == 0) return FVector::ZeroVector;
+	AverageVelocity /= nbSheepInVisualRange;
+
+	// Alignment is more important when gazing
+	if (IsGazing)
+	{
+		return (AverageVelocity - GetVelocity()) * GazingAlignmentFactor;
+	}
+	else
+	{
+		return (AverageVelocity - GetVelocity()) * AlignmentFactor;
+	}
 }
 
 void ASheepBot::GazingMovement()
@@ -321,4 +353,11 @@ void ASheepBot::RemoveActorInVisualRange(AActor*& OtherActor)
 			Shepherd = nullptr;
 		}
 	}
+}
+
+void ASheepBot::RandomizeRange()
+{
+	VisualRange = FMath::RandRange(MinVisualRange, MaxVisualRange);
+	AvoidRange = FMath::RandRange(MinAvoidRange, MaxAvoidRange);
+	GetWorldTimerManager().SetTimer(RandomizeRangeTimer, this, &ASheepBot::RandomizeRange, RandomizeTime);
 }
