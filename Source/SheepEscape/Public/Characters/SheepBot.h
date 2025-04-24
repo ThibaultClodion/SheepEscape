@@ -46,7 +46,7 @@ private:
 	FVector Separation();
 	FVector Alignment();
 	UPROPERTY(EditDefaultsOnly, Category = "Boid Behavior")
-	float CohesionFactor = 0.05f;
+	float CohesionFactor = 0.04f;
 	UPROPERTY(EditDefaultsOnly, Category = "Boid Behavior")
 	float SeparationFactor = 0.2f;
 	UPROPERTY(EditDefaultsOnly, Category = "Boid Behavior")

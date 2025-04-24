@@ -121,12 +121,6 @@ FVector ASheepBot::Cohesion()
 	if (nbSheepInVisualRange == 0) return FVector::ZeroVector;
 	HerdCenter /= nbSheepInVisualRange;
 
-	// Run faster to the herd center if it's far to visual radius
-	if (FVector::Distance(GetActorLocation(), HerdCenter) > VisualRange*1.8f)
-	{
-		return (HerdCenter - GetActorLocation()).GetSafeNormal() * MaxSpeed;
-	}
-
 	return (HerdCenter - GetActorLocation()) * CohesionFactor;
 }
 
@@ -203,6 +197,7 @@ void ASheepBot::GazingMovement()
 	{
 		// Don't let velocity being incremented
 		BoidVelocity = FVector::ZeroVector;
+
 	}
 }
 
