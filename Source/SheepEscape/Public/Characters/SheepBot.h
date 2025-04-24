@@ -4,13 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Characters/BaseCharacter.h"
-#include "NavigationSystem.h"
 #include "SheepBot.generated.h"
 
 class USphereComponent;
 class AShepherdCharacter;
-struct FAIRequestID;
-struct FPathFollowingResult;
 
 UCLASS()
 class SHEEPESCAPE_API ASheepBot : public ABaseCharacter
@@ -63,16 +60,14 @@ private:
 	void InterruptGazing();
 	bool IsGazing = false;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Gazing Behavior")
 	float MinGazingTime = 3.0f;
-	UPROPERTY(EditDefaultsOnly, Category = "Gazing Behavior")
 	float MaxGazingTime = 20.0f;
 	FTimerHandle GazingTimer;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Gazing Behavior")
+	UPROPERTY(EditDefaultsOnly, Category = "Boid Behavior")
 	float MinVelocityLengthToStopGazing = 0.35f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Gazing Behavior")
+	UPROPERTY(EditDefaultsOnly, Category = "Boid Behavior")
 	float GazingAlignmentFactor = 0.3f;
 
 	/** Leading Behavior */
@@ -88,25 +83,6 @@ private:
 	FTimerHandle LeadingTimer;
 
 	FVector RandomLeadingInput = FVector::ZeroVector;
-
-	/** Test : Random location on navmesh */
-	void StartLeading2(float MinDistance, float MaxDistance);
-	void StopLeading2();
-
-	UPROPERTY(EditDefaultsOnly, Category = "Leading Behavior")
-	float MinLittleLeadDistance = 100.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Leading Behavior")
-	float MaxLittleLeadDistance = 200.f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Leading Behavior")
-	float MinBigLeadDistance = 1000.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Leading Behavior")
-	float MaxBigLeadDistance = 2000.f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Leading Behavior")
-	float MinVelocityLengthToStopLead= 0.35f;
-
-	void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result);
 
 	/** Boid Visual Sphere */
 	UPROPERTY(VisibleAnywhere)
