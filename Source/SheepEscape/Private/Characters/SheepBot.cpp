@@ -7,6 +7,9 @@
 #include "Characters/ShepherdCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Managers/MainGameInstance.h"
+#include "AIController.h"
+#include "Navigation/PathFollowingComponent.h"
+#include "AITypes.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 ASheepBot::ASheepBot()
@@ -222,15 +225,13 @@ void ASheepBot::StopGazing()
 	// Try to lead herd to another location
 	if (OneChanceOutOfTwenty)
 	{
-		// Lead longer
-		StartLeading(1.5f);
-		RandomLeadingInput = FVector(FMath::RandRange(-1.f, 1.f), FMath::RandRange(-1.f, 1.f), 0.f).GetClampedToSize(0.8f, 1.f);
+		UE_LOG(LogTemp, Warning, TEXT("SheepBot takes a big lead !"));
+		StartLeading2(MinBigLeadDistance, MaxBigLeadDistance);
 	}
 	// Little move to gaze at another location
 	else
 	{
-		StartLeading(1.f);
-		RandomLeadingInput = FVector(FMath::RandRange(-1.f, 1.f), FMath::RandRange(-1.f, 1.f), 0.f).GetClampedToSize(0, MinVelocityLengthToStopGazing);
+		StartLeading2(MinLittleLeadDistance, MaxLittleLeadDistance);
 	}
 }
 
@@ -243,44 +244,67 @@ void ASheepBot::InterruptGazing()
 void ASheepBot::LeadMovement()
 {
 	// If Velocity is too high -> StopLeading to follow herd
-	if ((BoidVelocity / MaxSpeed).Length() >= FMath::Max(MinVelocityLengthToStopGazing, RandomLeadingInput.Length()))
+	if ((BoidVelocity / MaxSpeed).Length() >= MinVelocityLengthToStopLead)
 	{
-		InterruptLeading();
+		StopLeading2();
 		AddMovementInput(BoidVelocity / MaxSpeed);
 	}
 	else
 	{
 		// Don't let velocity being incremented
 		BoidVelocity = FVector::ZeroVector;
-
-		AddMovementInput(RandomLeadingInput);
 	}
 }
 
-void ASheepBot::StartLeading(float LeadingTimeFactor)
+void ASheepBot::StartLeading2(float MinDistance, float MaxDistance)
 {
-	// Setup Leading Timer
 	IsLeading = true;
-	const float LeadingTime = FMath::RandRange(MinLeadingTime, MaxLeadingTime) * LeadingTimeFactor;
-	GetWorldTimerManager().SetTimer(LeadingTimer, this, &ASheepBot::StopLeading, LeadingTime);
+
+	// Get AIController
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (!AIController) return;
+
+	// Get random location
+	FVector Origin = GetActorLocation();
+	FVector2D Rand2D = FMath::RandPointInCircle(1.f).GetSafeNormal() * FMath::RandRange(MinDistance, MaxDistance);
+	FVector RawTarget = Origin + FVector(Rand2D.X, Rand2D.Y, 0.f);
+
+	// Project point to navigation
+	FNavLocation NavLocation;
+	if (!UNavigationSystemV1::GetCurrent(GetWorld())->ProjectPointToNavigation(RawTarget, NavLocation))
+		return;
+
+	// Move to location
+	FAIRequestID MoveRequestID = AIController->MoveToLocation(NavLocation.Location, 20.f);
+
+	// Bind to OnRequestFinished
+	if (auto* PathComp = AIController->GetPathFollowingComponent())
+	{
+		PathComp->OnRequestFinished.RemoveAll(this); // Clear previous bindings
+		PathComp->OnRequestFinished.AddUObject(this, &ASheepBot::OnMoveCompleted);
+	}
 }
 
-void ASheepBot::StopLeading()
+void ASheepBot::StopLeading2()
 {
 	IsLeading = false;
-
-	// Stop all movements
 	BoidVelocity = FVector::ZeroVector;
 	RandomLeadingInput = FVector::ZeroVector;
-	GetCharacterMovement()->StopMovementImmediately();
+
+	if (AAIController* AIController = Cast<AAIController>(GetController()))
+	{
+		AIController->StopMovement();
+	}
 }
 
-void ASheepBot::InterruptLeading()
+void ASheepBot::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
 {
-	IsLeading = false;
-	RandomLeadingInput = FVector::ZeroVector;
+	if (Result.IsSuccess())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SheepBot est arrivé à destination !"));
 
-	GetWorldTimerManager().ClearTimer(LeadingTimer);
+		StopLeading2();
+	}
 }
 
 void ASheepBot::InitializeSphereOverlaps()
