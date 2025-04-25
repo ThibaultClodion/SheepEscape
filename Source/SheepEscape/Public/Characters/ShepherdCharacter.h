@@ -13,6 +13,8 @@ class SHEEPESCAPE_API AShepherdCharacter : public ABasePlayer
 	
 public:
 	AShepherdCharacter();
+
+	virtual void Tick(float DeltaTime) override;
 	void SetupCrookHitTraces();
 
 	virtual void Eliminate() override;

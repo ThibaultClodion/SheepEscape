@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Managers/MainGameInstance.h"
 #include "Camera.generated.h"
 
 class USpringArmComponent;
@@ -30,6 +31,8 @@ protected:
 	void UpdateTargets();
 
 private:
+	UMainGameInstance* GameInstance;
+
 	void MoveToCenterLocation(float DeltaTime);
 	void ZoomToSeeTargets();
 	float CustomDistanceWithRatio(FVector V1, FVector V2);

@@ -20,3 +20,16 @@ void UMainGameInstance::InitializeSheeps()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASheepCharacter::StaticClass(), SheepCharacters);
 	Sheeps.Append(SheepCharacters);
 }
+
+void UMainGameInstance::UpdateHerdCenter()
+{
+	if (Sheeps.Num() == 0) return;
+
+	FVector Center = FVector::ZeroVector;
+	for (AActor* Sheep : Sheeps)
+	{
+		Center += Sheep->GetActorLocation();
+	}
+
+	HerdCenter = Center / Sheeps.Num();
+}

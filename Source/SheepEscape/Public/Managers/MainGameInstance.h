@@ -26,10 +26,16 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShepherdElimination();
 
-	/** Game Data */
+	/** Sheeps herd data */
 	UFUNCTION(BlueprintCallable)
 	void InitializeSheeps();
 
+	void UpdateHerdCenter();
+
 	UPROPERTY(BlueprintReadWrite)
 	TArray<AActor*> Sheeps;
+	UPROPERTY(BlueprintReadWrite)
+	AActor* Shepherd;
+
+	FVector HerdCenter;
 };

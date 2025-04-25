@@ -38,11 +38,16 @@ void ACamera::SetupVisualSphere()
 void ACamera::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GameInstance = Cast<UMainGameInstance>(GetGameInstance());
 }
 
 void ACamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// Update herd center here because there is only one camera on each level
+	GameInstance->UpdateHerdCenter();
 
 	MoveToCenterLocation(DeltaTime);
 	ZoomToSeeTargets();

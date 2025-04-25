@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Managers/MainGameInstance.h"
 #include "BaseCharacter.generated.h"
 
 class ASheepCharacter;
@@ -35,6 +36,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UMainGameInstance* GameInstance;
+
 	/** Push Timers */
 	void StartPushTimer(ASheepCharacter* Pusher);
 	void StopPushTimer();
@@ -42,5 +45,4 @@ protected:
 
 	float PushedTime = 2.f;
 	FTimerHandle PushedTimer;
-
 };

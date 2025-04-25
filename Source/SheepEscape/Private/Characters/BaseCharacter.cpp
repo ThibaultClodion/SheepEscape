@@ -20,6 +20,8 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GameInstance = Cast<UMainGameInstance>(GetGameInstance());
 }
 
 void ABaseCharacter::Tick(float DeltaTime)

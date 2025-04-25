@@ -16,7 +16,6 @@ class SHEEPESCAPE_API ASheepBot : public ABaseCharacter
 
 public:
 	ASheepBot();
-	void SetupVisualSphere();
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -29,4 +28,17 @@ private:
 	/** Attributes */
 	float MaxSpeed = 500.f;
 	float Acceleration = 500.f;
+
+	/** Boids Movement */
+	void Move(float DeltaTime);
+	FVector Cohesion();
+	FVector Separation();
+	FVector Alignment();
+	FVector Escape();
+
+	/** Boids Parameters */
+	float inv(float x, float s);
+
+	UPROPERTY(EditDefaultsOnly, Category = Boids)
+	float AlignementRadius = 300.f;
 };

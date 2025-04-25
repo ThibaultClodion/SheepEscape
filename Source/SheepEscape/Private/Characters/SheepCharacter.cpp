@@ -28,7 +28,6 @@ void ASheepCharacter::Eliminate()
 
 	if (PushedBy) PushedBy->AddEliminateSheepAction();
 
-	UMainGameInstance* GameInstance = Cast<UMainGameInstance>(GetGameInstance());
 	GameInstance->SheepElimination(this);
 }
 
@@ -39,19 +38,16 @@ void ASheepCharacter::Action(const FInputActionValue& Value)
 
 void ASheepCharacter::AddEliminateShepherdAction()
 {
-	UMainGameInstance* GameInstance = Cast<UMainGameInstance>(GetGameInstance());
 	GameInstance->AddAction(PlayerController, EScoreAction::ESA_SheepEliminateSheperd);
 }
 
 void ASheepCharacter::AddEliminateSheepAction()
 {
-	UMainGameInstance* GameInstance = Cast<UMainGameInstance>(GetGameInstance());
 	GameInstance->AddAction(PlayerController, EScoreAction::ESA_SheepEliminateSheep);
 }
 
 void ASheepCharacter::AddSurviveAction()
 {
-	UMainGameInstance* GameInstance = Cast<UMainGameInstance>(GetGameInstance());
 	GameInstance->AddAction(PlayerController, EScoreAction::ESA_SheepSurvive);
 }
 

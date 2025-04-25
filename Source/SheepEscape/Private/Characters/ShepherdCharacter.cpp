@@ -15,6 +15,11 @@ AShepherdCharacter::AShepherdCharacter()
 	SetupCrookHitTraces();
 }
 
+void AShepherdCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
 void AShepherdCharacter::SetupCrookHitTraces()
 {
 	CrookHitTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Heabutt Trace Start"));
@@ -31,7 +36,6 @@ void AShepherdCharacter::Eliminate()
 
 	if (PushedBy) PushedBy->AddEliminateShepherdAction();
 
-	UMainGameInstance* GameInstance = Cast<UMainGameInstance>(GetGameInstance());
 	GameInstance->ShepherdElimination();
 }
 
@@ -42,13 +46,11 @@ void AShepherdCharacter::Action(const FInputActionValue& Value)
 
 void AShepherdCharacter::AddRescueSheepAction()
 {
-	UMainGameInstance* GameInstance = Cast<UMainGameInstance>(GetGameInstance());
 	GameInstance->AddAction(PlayerController, EScoreAction::ESA_ShepherdRescueSheep);
 }
 
 void AShepherdCharacter::AddEliminatePlayerAction()
 {
-	UMainGameInstance* GameInstance = Cast<UMainGameInstance>(GetGameInstance());
 	GameInstance->AddAction(PlayerController, EScoreAction::ESA_ShepherdEliminatePlayerSheep);
 }
 
