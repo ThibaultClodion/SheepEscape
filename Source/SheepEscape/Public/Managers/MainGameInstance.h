@@ -30,12 +30,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void InitializeSheeps();
 
-	void UpdateHerdCenter();
-
 	UPROPERTY(BlueprintReadWrite)
 	TArray<AActor*> Sheeps;
 	UPROPERTY(BlueprintReadWrite)
 	AActor* Shepherd;
 
-	FVector HerdCenter;
 };

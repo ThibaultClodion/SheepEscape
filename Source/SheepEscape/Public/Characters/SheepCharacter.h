@@ -29,7 +29,7 @@ public:
 
 private:
 	/** Attributes */
-	float MaxSpeed = 500.f;
+	float MaxSpeed = 450.f;
 
 	/** Heabutt */
 	void Heabutt();
