@@ -94,7 +94,7 @@ void ABaseWeel::ActorJoin(AActor* Actor)
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASheepCharacter::StaticClass(), SheepsPlayer);
 	}
 	
-	if (NbSheepsInside == GameInstance->NbSheeps)
+	if (NbSheepsInside == GameInstance->Sheeps.Num())
 	{
 		AllSheepsIn();
 	}
@@ -115,7 +115,7 @@ void ABaseWeel::ActorLeft(AActor* Actor)
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASheepCharacter::StaticClass(), SheepsPlayer);
 	}
 
-	if (NbSheepsInside == GameInstance->NbSheeps - 1)
+	if (NbSheepsInside == GameInstance->Sheeps.Num() - 1)
 	{
 		CancelAllSheepsIn();
 	}

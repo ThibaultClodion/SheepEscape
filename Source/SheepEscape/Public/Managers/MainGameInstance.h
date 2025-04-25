@@ -22,11 +22,14 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void AddAction(APlayerController* PlayerController, EScoreAction Action);
 	UFUNCTION(BlueprintImplementableEvent)
-	void SheepElimination();
+	void SheepElimination(AActor* SheepEliminated);
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShepherdElimination();
 
 	/** Game Data */
+	UFUNCTION(BlueprintCallable)
+	void InitializeSheeps();
+
 	UPROPERTY(BlueprintReadWrite)
-	int NbSheeps;
+	TArray<AActor*> Sheeps;
 };

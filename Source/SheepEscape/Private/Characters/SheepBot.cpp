@@ -29,7 +29,7 @@ void ASheepBot::Eliminate()
 	if(PushedBy) PushedBy->AddEliminateSheepAction();
 
 	UMainGameInstance* GameInstance = Cast<UMainGameInstance>(GetGameInstance());
-	GameInstance->SheepElimination();
+	GameInstance->SheepElimination(this);
 
 	Destroy();
 }

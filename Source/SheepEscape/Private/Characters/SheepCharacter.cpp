@@ -29,7 +29,7 @@ void ASheepCharacter::Eliminate()
 	if (PushedBy) PushedBy->AddEliminateSheepAction();
 
 	UMainGameInstance* GameInstance = Cast<UMainGameInstance>(GetGameInstance());
-	GameInstance->SheepElimination();
+	GameInstance->SheepElimination(this);
 }
 
 void ASheepCharacter::Action(const FInputActionValue& Value)
