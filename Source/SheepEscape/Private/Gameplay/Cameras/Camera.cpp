@@ -26,7 +26,7 @@ void ACamera::SetupSpringArm()
 {
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetRootComponent());
-	SpringArm->TargetArmLength = 2500.f;
+	SpringArm->TargetArmLength = MaxArmLength;
 }
 
 void ACamera::SetupVisualSphere()

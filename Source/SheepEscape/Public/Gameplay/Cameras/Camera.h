@@ -48,10 +48,10 @@ private:
 	USpringArmComponent* SpringArm;
 
 	UPROPERTY(EditDefaultsOnly)
-	float MinArmLength = 800.f;
+	float MinArmLength = 1800.f;
 
 	UPROPERTY(EditDefaultsOnly)
-	float MaxArmLength = 3000.f;
+	float MaxArmLength = 2400.f;
 
 	/** View Camera */
 	UPROPERTY(VisibleAnywhere)
