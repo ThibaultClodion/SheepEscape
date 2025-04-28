@@ -38,24 +38,33 @@ void ASheepBot::Eliminate()
 
 void ASheepBot::Move(float DeltaTime)
 {
-	FVector Velocity = 
-		CohesionFactor * (1 + EmotionalState() * CohesionStressFactor) * Cohesion()
-		+ SeparationFactor * (1 + EmotionalState() * SeparationStressFactor) * Separation()
-		+ AlignmentFactor * (1 + EmotionalState() * AlignmentStressFactor) * Alignment()
-		+ EmotionalState() * EscapeFactor * Escape();
+	UpdateVelocity(DeltaTime);
 
-	AddMovementInput(Velocity);
-
-	/*FVector VelocityMax = EmotionalState() * Velocity.GetSafeNormal();
-
-	if (Velocity.Length() <= VelocityMax.Length())
+	if ((Velocity / MaxSpeed).Length() >= MinVelocityLengthToMove)
 	{
 		AddMovementInput(Velocity / MaxSpeed);
 	}
+	// If Velocity is too slow -> Stop movement
 	else
 	{
-		AddMovementInput(VelocityMax / MaxSpeed);
-	}*/
+		Velocity = FVector::ZeroVector;
+		GetCharacterMovement()->StopMovementImmediately();
+	}
+}
+
+void ASheepBot::UpdateVelocity(float DeltaTime)
+{
+	EmotionalStateUpdate(DeltaTime);
+
+	FVector TargetVelocity = Velocity
+		+ (CohesionFactor + (CohesionStressFactor - CohesionFactor) * EmotionalState) * Cohesion()
+		+ (SeparationFactor + (SeparationStressFactor - SeparationFactor) * EmotionalState) * Separation()
+		+ (AlignmentFactor + (AlignmentStressFactor - AlignmentFactor) * EmotionalState) * Alignment()
+		+ EmotionalState * EscapeFactor * Escape();
+
+	Velocity = FMath::Lerp(Velocity, TargetVelocity, DeltaTime * Acceleration);
+	Velocity *= Inertia;
+	Velocity = Velocity.GetClampedToSize(0.f, MaxSpeed);
 }
 
 FVector ASheepBot::Cohesion()
@@ -132,19 +141,28 @@ FVector ASheepBot::Escape()
 	return FVector::ZeroVector;
 }
 
-float ASheepBot::Inv(float x, float s)
+void ASheepBot::EmotionalStateUpdate(float DeltaTime)
 {
-	float epsilon = 0.0001f;
-	return FMath::Pow(x / s + epsilon, -2);
-}
+	/* Assign EmotionalState to 0.f if the shepherd is not in the EscapeRadius
+	* Assign EmotionalState to ~1.f if the shepherd is near the sheep */
 
-float ASheepBot::EmotionalState()
-{
 	if (GameInstance->Shepherd)
 	{
 		float DistanceToShepherd = (GetActorLocation() - GameInstance->Shepherd->GetActorLocation()).Length();
-		return 1 / 3.14 * FMath::Atan((EscapeRadius - DistanceToShepherd) / EmotionalStateMultiplier) + 0.5f;
-	}
+		if (DistanceToShepherd <= EscapeRadius)
+		{
+			EmotionalState = FMath::Lerp(EmotionalState, DistanceToShepherd / EscapeRadius, EmotionalStateLerpFactor * DeltaTime);
+		}
+		else
+		{
+			EmotionalState = FMath::Lerp(EmotionalState, 0.f, EmotionalStateLerpFactor * DeltaTime);
+		}
 
-	return 0.f;
+		/*Previous function with arctan to smooth the curve but not really useful
+		return 1 / 3.14 * FMath::Atan((EscapeRadius - DistanceToShepherd) / EmotionalStateMultiplier) + 0.5f; */
+	}
+	else
+	{
+		EmotionalState = 0.f;
+	}
 }
