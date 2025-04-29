@@ -70,8 +70,9 @@ void ASheepBot::BoidMovement()
 void ASheepBot::GazingMovement()
 {
 	// If Velocity is too high -> stop gazing to follow herd
-	if ((Velocity / MaxSpeed).Length() >= MinVelocityToStopGaze)
+	if ((Velocity / MaxSpeed).Length() >= FMath::Max(MinVelocityToStopGaze, GazeVelocity.Length()))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Stop gazing : %f"), (Velocity / MaxSpeed).Length());
 		StopGaze();
 	}
 	else
@@ -85,11 +86,24 @@ void ASheepBot::UpdateVelocity(float DeltaTime)
 {
 	EmotionalStateUpdate(DeltaTime);
 
-	FVector TargetVelocity = Velocity
-		+ (CohesionFactor + (CohesionStressFactor - CohesionFactor) * EmotionalState) * Cohesion()
-		+ (SeparationFactor + (SeparationStressFactor - SeparationFactor) * EmotionalState) * Separation()
-		+ (AlignmentFactor + (AlignmentStressFactor - AlignmentFactor) * EmotionalState) * Alignment()
-		+ EmotionalState * EscapeFactor * Escape();
+	FVector TargetVelocity;
+	if (!IsGazing)
+	{
+		TargetVelocity = Velocity
+			+ (CohesionFactor + (CohesionStressFactor - CohesionFactor) * EmotionalState) * Cohesion()
+			+ (SeparationFactor + (SeparationStressFactor - SeparationFactor) * EmotionalState) * Separation()
+			+ (AlignmentFactor + (AlignmentStressFactor - AlignmentFactor) * EmotionalState) * Alignment()
+			+ EmotionalState * EscapeFactor * Escape();
+	}
+	else
+	{
+		TargetVelocity = Velocity
+			+ (GazeCohesionFactor + (CohesionStressFactor - GazeCohesionFactor) * EmotionalState) * Cohesion()
+			+ (GazeSeparationFactor + (SeparationStressFactor - GazeSeparationFactor) * EmotionalState) * Separation()
+			+ (GazeAlignmentFactor + (AlignmentStressFactor - GazeAlignmentFactor) * EmotionalState) * Alignment()
+			+ EmotionalState * EscapeFactor * Escape();
+	}
+
 
 	Velocity = FMath::Lerp(Velocity, TargetVelocity, DeltaTime * Acceleration);
 	Velocity *= Inertia;
@@ -153,7 +167,15 @@ FVector ASheepBot::Alignment()
 
 	if (nbSheepsInAlignmentRadius == 0) return FVector::ZeroVector;
 
-	return AlignmentVelocity / nbSheepsInAlignmentRadius - GetVelocity();
+	if (IsGazing)
+	{
+		return AlignmentVelocity / nbSheepsInAlignmentRadius;
+	}
+	else
+	{
+		return AlignmentVelocity / nbSheepsInAlignmentRadius - GetVelocity();
+	}
+
 }
 
 FVector ASheepBot::Escape()
@@ -198,42 +220,48 @@ void ASheepBot::EmotionalStateUpdate(float DeltaTime)
 
 void ASheepBot::StartGaze()
 {
+	// If the sheep is first time gazing make a pause
 	if (!IsGazing)
 	{
 		IsGazing = true;
 		Velocity = FVector::ZeroVector;
 		GetCharacterMovement()->StopMovementImmediately();
-	}
 
-	int Random0To20 = FMath::RandRange(0, 20);
-	if (Random0To20 < 10)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("SheepBot is pause"));
 		// Pause
 		GazeVelocity = FVector::ZeroVector;
 
 		const float GazingTime = FMath::RandRange(MinWaitTime, MaxWaitTime);
-		GetWorldTimerManager().SetTimer(GazeTimer, this, &ASheepBot::StopGaze, GazingTime);
-	}
-	else if (Random0To20 < 15)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("SheepBot is Little Movement"));
-		// Little Movement
-		FVector2D RandomPoint = FMath::RandPointInCircle(1.f).GetSafeNormal() * FMath::RandRange(MinLittleMovementMagnitude, MaxLittleMovementMagnitude);
-		GazeVelocity = FVector(RandomPoint.X, RandomPoint.Y, 0.f);
-
-		const float GazingTime = FMath::RandRange(MinLittleMovementTime, MaxLittleMovementTime);
-		GetWorldTimerManager().SetTimer(GazeTimer, this, &ASheepBot::StopGaze, GazingTime);
-	}
-	else if (Random0To20 < 20)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("SheepBot is Big Movement"));
-		// Big Movement
-		FVector2D RandomPoint = FMath::RandPointInCircle(1.f).GetSafeNormal() * FMath::RandRange(MinBigMovementMagnitude, MaxBigMovementMagnitude);
-		GazeVelocity = FVector(RandomPoint.X, RandomPoint.Y, 0.f);
-
-		const float GazingTime = FMath::RandRange(MinBigMovementTime, MaxBigMovementTime);
 		GetWorldTimerManager().SetTimer(GazeTimer, this, &ASheepBot::StartGaze, GazingTime);
+	}
+	else
+	{
+		int Random0To5 = FMath::RandRange(0, 15);
+		if (Random0To5 <= 10)
+		{
+			// Pause
+			GazeVelocity = FVector::ZeroVector;
+
+			const float GazingTime = FMath::RandRange(MinWaitTime, MaxWaitTime);
+			GetWorldTimerManager().SetTimer(GazeTimer, this, &ASheepBot::StartGaze, GazingTime);
+		}
+		else if (Random0To5 <= 14)
+		{
+			// Little Movement
+			FVector2D RandomPoint = FMath::RandPointInCircle(1.f).GetSafeNormal() * FMath::RandRange(MinLittleMovementMagnitude, MaxLittleMovementMagnitude);
+			GazeVelocity = FVector(RandomPoint.X, RandomPoint.Y, 0.f);
+
+			const float GazingTime = FMath::RandRange(MinLittleMovementTime, MaxLittleMovementTime);
+			GetWorldTimerManager().SetTimer(GazeTimer, this, &ASheepBot::StartGaze, GazingTime);
+		}
+		else if (Random0To5 == 15)
+		{
+			// Big Movement
+			FVector2D RandomPoint = FMath::RandPointInCircle(1.f).GetSafeNormal() * FMath::RandRange(MinBigMovementMagnitude, MaxBigMovementMagnitude);
+			GazeVelocity = FVector(RandomPoint.X, RandomPoint.Y, 0.f);
+
+			const float GazingTime = FMath::RandRange(MinBigMovementTime, MaxBigMovementTime);
+			GetWorldTimerManager().SetTimer(GazeTimer, this, &ASheepBot::StartGaze, GazingTime);
+		}
 	}
 }
 
