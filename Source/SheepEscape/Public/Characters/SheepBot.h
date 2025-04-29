@@ -8,6 +8,8 @@
 
 class USphereComponent;
 class AShepherdCharacter;
+struct FAIRequestID;
+struct FPathFollowingResult;
 
 UCLASS()
 class SHEEPESCAPE_API ASheepBot : public ABaseCharacter
@@ -25,18 +27,21 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	/** Boids Movement */
+	/** Movements */
 	void Move(float DeltaTime);
-	void UpdateVelocity(float DeltaTime);
+	void BoidMovement();
+	void GazingMovement();
 
+	/** Velocity Update */
+	void UpdateVelocity(float DeltaTime);
 	FVector Cohesion();
 	FVector Separation();
 	FVector Alignment();
 	FVector Escape();
+	void EmotionalStateUpdate(float DeltaTime);
+	FVector Velocity = FVector::ZeroVector;
 
 	/** Boids Parameters */
-	void EmotionalStateUpdate(float DeltaTime);
-	FVector Velocity;
 
 	// Common parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Boids Common Parameters")
@@ -46,7 +51,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Boids Common Parameters")
 	float Inertia = 0.99f;
 	UPROPERTY(EditDefaultsOnly, Category = "Boids Common Parameters")
-	float MinVelocityLengthToMove = 0.15f;
+	float MinVelocityToStopMove = 0.15f;
 	UPROPERTY(EditDefaultsOnly, Category = "Boids Common Parameters", meta = (ClampMin = "0.5", ClampMax = "0.9", UIMin = "0.5", UIMax = "0.9"))
 	float EmotionalStateMultiplier = 0.7f;
 
@@ -82,4 +87,37 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Escape Parameters")
 	float EmotionalStateLerpFactor = 3.f;
 	float EmotionalState = 0.f;
+
+	/** Gazing Parameters */
+	void StartGazing();
+	void StopGazing();
+
+	bool IsGazing = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
+	float MinVelocityToStopGaze = 0.15f;
+
+	// Timer
+	FTimerHandle WaitTimer;
+	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
+	float MinWaitTime = 3.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
+	float MaxWaitTime = 30.f;
+
+	// Random movement
+	void RandomMovement();
+	void MoveToNextPointOnPath(FAIRequestID RequestID, const FPathFollowingResult& Result);
+	TArray<FVector> PathPoints;
+	int PathPointsIndex;
+	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
+	float OffsetPointDistance = 50.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
+	float MinLittleRandomMovementDistance = 50.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
+	float MaxLittleRandomMovementDistance = 150.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
+	float MinBigRandomMovementDistance = 200.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
+	float MaxBigRandomMovementDistance = 1000.f;
+
 };

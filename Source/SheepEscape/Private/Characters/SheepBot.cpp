@@ -2,6 +2,10 @@
 
 #include "Characters/SheepBot.h"
 #include "Characters/SheepCharacter.h"
+#include "NavigationSystem.h"
+#include "NavigationPath.h"
+#include "AIController.h"
+#include "Navigation/PathFollowingComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 ASheepBot::ASheepBot()
@@ -40,15 +44,40 @@ void ASheepBot::Move(float DeltaTime)
 {
 	UpdateVelocity(DeltaTime);
 
-	if ((Velocity / MaxSpeed).Length() >= MinVelocityLengthToMove)
+	if (!IsGazing)
+	{
+		BoidMovement();
+	}
+	else
+	{
+		GazingMovement();
+	}
+}
+
+void ASheepBot::BoidMovement()
+{
+	if ((Velocity / MaxSpeed).Length() >= MinVelocityToStopMove)
 	{
 		AddMovementInput(Velocity / MaxSpeed);
 	}
-	// If Velocity is too slow -> Stop movement
+	// If Velocity is too slow
+	else
+	{
+		StartGazing();
+	}
+}
+
+void ASheepBot::GazingMovement()
+{
+	// If Velocity is too high -> stop gazing to follow herd
+	if ((Velocity / MaxSpeed).Length() >= MinVelocityToStopGaze)
+	{
+		StopGazing();
+	}
+	// Don't let velocity increment
 	else
 	{
 		Velocity = FVector::ZeroVector;
-		GetCharacterMovement()->StopMovementImmediately();
 	}
 }
 
@@ -165,4 +194,102 @@ void ASheepBot::EmotionalStateUpdate(float DeltaTime)
 	{
 		EmotionalState = 0.f;
 	}
+}
+
+void ASheepBot::StartGazing()
+{
+	IsGazing = true;
+
+	// Stop movement
+	Velocity = FVector::ZeroVector;
+	GetCharacterMovement()->StopMovementImmediately();
+
+	// Wait to gaze a bit before moving
+	const float GazingTime = FMath::RandRange(MinWaitTime, MaxWaitTime);
+	GetWorldTimerManager().SetTimer(WaitTimer, this, &ASheepBot::RandomMovement, GazingTime);
+}
+
+void ASheepBot::StopGazing()
+{
+	IsGazing = false;
+
+	// Stop waiting
+	GetWorldTimerManager().ClearTimer(WaitTimer);
+
+	// Stop movement
+	if (AAIController* AIController = Cast<AAIController>(GetController()))
+	{
+		AIController->StopMovement();
+		GetCharacterMovement()->StopMovementImmediately();
+	}
+}
+
+void ASheepBot::RandomMovement()
+{
+	// Get NavSys
+	UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld());
+	if (!NavSys) return;
+
+	bool OneChanceOutOfTwenty = (FMath::RandRange(0, 20) == 0);
+
+	FVector2D Rand2D;
+	// Big random movement
+	if (OneChanceOutOfTwenty)
+	{
+		Rand2D = FMath::RandPointInCircle(1.f).GetSafeNormal() * FMath::RandRange(MinBigRandomMovementDistance, MaxBigRandomMovementDistance);
+	}
+	// Little random movement
+	else
+	{
+		Rand2D = FMath::RandPointInCircle(1.f).GetSafeNormal() * FMath::RandRange(MinLittleRandomMovementDistance, MaxLittleRandomMovementDistance);
+	}
+
+	// Project point to navigation
+	FVector RawTarget = GetActorLocation() + FVector(Rand2D.X, Rand2D.Y, 0.f);
+	FNavLocation NavLocation;
+	if (!NavSys->ProjectPointToNavigation(RawTarget, NavLocation)) return;
+
+	// Get a path to the location
+	UNavigationPath* NavPath = NavSys->FindPathToLocationSynchronously(GetWorld(), GetActorLocation(), NavLocation);
+	if (!NavPath || NavPath->PathPoints.Num() < 2) return;
+
+	// Reset path points
+	PathPoints.Empty();
+	PathPoints = NavPath->PathPoints;
+	PathPointsIndex = 0;
+
+	// Move to the first point
+	MoveToNextPointOnPath(0, 0);
+}
+
+void ASheepBot::MoveToNextPointOnPath(FAIRequestID RequestID, const FPathFollowingResult& Result)
+{
+	if (PathPointsIndex >= PathPoints.Num())
+	{
+		// Fin du chemin, on recommence à gazer
+		StartGazing();
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("MoveToNextPointOnPath, index = %d"), PathPointsIndex);
+
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (!AIController) return;
+
+	// Ajoute un petit offset aléatoire pour "humaniser"
+	FVector RandomOffset = FVector(FMath::RandRange(-OffsetPointDistance, OffsetPointDistance), FMath::RandRange(-OffsetPointDistance, OffsetPointDistance), 0);
+	FVector TargetLocation = PathPoints[PathPointsIndex] + RandomOffset;
+
+	// Mets à jour l'index pour le prochain appel
+	PathPointsIndex++;
+
+	// Écoute uniquement si on n’est pas déjà lié (évite les empilements)
+	if (auto* PathComp = AIController->GetPathFollowingComponent())
+	{
+		PathComp->OnRequestFinished.Clear();
+		PathComp->OnRequestFinished.AddUObject(this, &ASheepBot::MoveToNextPointOnPath);
+	}
+
+	// Lance le mouvement
+	AIController->MoveToLocation(TargetLocation, 5.f);
 }
