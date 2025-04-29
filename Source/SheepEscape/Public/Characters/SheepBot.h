@@ -51,7 +51,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Boids Common Parameters")
 	float Inertia = 0.99f;
 	UPROPERTY(EditDefaultsOnly, Category = "Boids Common Parameters")
-	float MinVelocityToStopMove = 0.15f;
+	float MinVelocityToStopMove = 0.2f;
 	UPROPERTY(EditDefaultsOnly, Category = "Boids Common Parameters", meta = (ClampMin = "0.5", ClampMax = "0.9", UIMin = "0.5", UIMax = "0.9"))
 	float EmotionalStateMultiplier = 0.7f;
 
@@ -67,9 +67,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Separation Parameters")
 	float SeparationFactor = 0.4f;
 	UPROPERTY(EditDefaultsOnly, Category = "Separation Parameters")
-	float SeparationStressFactor = 0.2f;
+	float SeparationStressFactor = 0.1f;
 	UPROPERTY(EditDefaultsOnly, Category = "Separation Parameters", meta = (ClampMin = "100.0", ClampMax = "300.0", UIMin = "100.0", UIMax = "300.0"))
-	float SeparationRadius = 200.f;
+	float SeparationRadius = 220.f;
 
 	// Alignment parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Alignment Parameters")
@@ -81,7 +81,7 @@ private:
 
 	// Escape parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Escape Parameters")
-	float EscapeFactor = 50.f;
+	float EscapeFactor = 200.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Escape Parameters", meta = (ClampMin = "360.0", ClampMax = "480.0", UIMin = "360.0", UIMax = "480.0"))
 	float EscapeRadius = 420.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Escape Parameters")
@@ -100,7 +100,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Gaze Parameters")
 	float MinVelocityToStopGaze = 0.25f;
 	UPROPERTY(EditDefaultsOnly, Category = "Gaze Parameters")
-	float GazeCohesionFactor = 0.05f;
+	float GazeCohesionFactor = 0.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Gaze Parameters")
 	float GazeAlignmentFactor = 0.25f;
 	UPROPERTY(EditDefaultsOnly, Category = "Gaze Parameters")
@@ -110,7 +110,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Gaze wait Parameters")
 	float MinWaitTime = 1.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Gaze wait Parameters")
-	float MaxWaitTime = 30.f;
+	float MaxWaitTime = 15.f;
 
 	// Little movement
 	UPROPERTY(EditDefaultsOnly, Category = "Gaze Litlle Movement Parameters")
@@ -118,7 +118,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Gaze Litlle Movement Parameters")
 	float MaxLittleMovementMagnitude = 0.5f;
 	UPROPERTY(EditDefaultsOnly, Category = "Gaze Litlle Movement Parameters")
-	float MinLittleMovementTime = 0.5f;
+	float MinLittleMovementTime = 0.3f;
 	UPROPERTY(EditDefaultsOnly, Category = "Gaze Litlle Movement Parameters")
 	float MaxLittleMovementTime = 1.0f;
 
@@ -128,7 +128,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Gaze Big Movement Parameters")
 	float MaxBigMovementMagnitude = 1.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Gaze Big Movement Parameters")
-	float MinBigMovementTime = 2.0f;
+	float MinBigMovementTime = 1.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Gaze Big Movement Parameters")
-	float MaxBigMovementTime = 5.0f;
+	float MaxBigMovementTime = 4.0f;
 };
