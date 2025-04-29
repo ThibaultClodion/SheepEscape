@@ -60,10 +60,10 @@ void ASheepBot::BoidMovement()
 	{
 		AddMovementInput(Velocity / MaxSpeed);
 	}
-	// If Velocity is too slow
+	// If Velocity is too slow start gazing
 	else
 	{
-		StartGazing();
+		StartGaze();
 	}
 }
 
@@ -72,12 +72,12 @@ void ASheepBot::GazingMovement()
 	// If Velocity is too high -> stop gazing to follow herd
 	if ((Velocity / MaxSpeed).Length() >= MinVelocityToStopGaze)
 	{
-		StopGazing();
+		StopGaze();
 	}
-	// Don't let velocity increment
 	else
 	{
-		Velocity = FVector::ZeroVector;
+		AddMovementInput(GazeVelocity);
+		Velocity = FVector::ZeroVector;	// Don't let velocity increment
 	}
 }
 
@@ -196,100 +196,49 @@ void ASheepBot::EmotionalStateUpdate(float DeltaTime)
 	}
 }
 
-void ASheepBot::StartGazing()
+void ASheepBot::StartGaze()
 {
-	IsGazing = true;
-
-	// Stop movement
-	Velocity = FVector::ZeroVector;
-	GetCharacterMovement()->StopMovementImmediately();
-
-	// Wait to gaze a bit before moving
-	const float GazingTime = FMath::RandRange(MinWaitTime, MaxWaitTime);
-	GetWorldTimerManager().SetTimer(WaitTimer, this, &ASheepBot::RandomMovement, GazingTime);
-}
-
-void ASheepBot::StopGazing()
-{
-	IsGazing = false;
-
-	// Stop waiting
-	GetWorldTimerManager().ClearTimer(WaitTimer);
-
-	// Stop movement
-	if (AAIController* AIController = Cast<AAIController>(GetController()))
+	if (!IsGazing)
 	{
-		AIController->StopMovement();
+		IsGazing = true;
+		Velocity = FVector::ZeroVector;
 		GetCharacterMovement()->StopMovementImmediately();
 	}
+
+	int Random0To20 = FMath::RandRange(0, 20);
+	if (Random0To20 < 10)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SheepBot is pause"));
+		// Pause
+		GazeVelocity = FVector::ZeroVector;
+
+		const float GazingTime = FMath::RandRange(MinWaitTime, MaxWaitTime);
+		GetWorldTimerManager().SetTimer(GazeTimer, this, &ASheepBot::StopGaze, GazingTime);
+	}
+	else if (Random0To20 < 15)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SheepBot is Little Movement"));
+		// Little Movement
+		FVector2D RandomPoint = FMath::RandPointInCircle(1.f).GetSafeNormal() * FMath::RandRange(MinLittleMovementMagnitude, MaxLittleMovementMagnitude);
+		GazeVelocity = FVector(RandomPoint.X, RandomPoint.Y, 0.f);
+
+		const float GazingTime = FMath::RandRange(MinLittleMovementTime, MaxLittleMovementTime);
+		GetWorldTimerManager().SetTimer(GazeTimer, this, &ASheepBot::StopGaze, GazingTime);
+	}
+	else if (Random0To20 < 20)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SheepBot is Big Movement"));
+		// Big Movement
+		FVector2D RandomPoint = FMath::RandPointInCircle(1.f).GetSafeNormal() * FMath::RandRange(MinBigMovementMagnitude, MaxBigMovementMagnitude);
+		GazeVelocity = FVector(RandomPoint.X, RandomPoint.Y, 0.f);
+
+		const float GazingTime = FMath::RandRange(MinBigMovementTime, MaxBigMovementTime);
+		GetWorldTimerManager().SetTimer(GazeTimer, this, &ASheepBot::StartGaze, GazingTime);
+	}
 }
 
-void ASheepBot::RandomMovement()
+void ASheepBot::StopGaze()
 {
-	// Get NavSys
-	UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld());
-	if (!NavSys) return;
-
-	bool OneChanceOutOfTwenty = (FMath::RandRange(0, 20) == 0);
-
-	FVector2D Rand2D;
-	// Big random movement
-	if (OneChanceOutOfTwenty)
-	{
-		Rand2D = FMath::RandPointInCircle(1.f).GetSafeNormal() * FMath::RandRange(MinBigRandomMovementDistance, MaxBigRandomMovementDistance);
-	}
-	// Little random movement
-	else
-	{
-		Rand2D = FMath::RandPointInCircle(1.f).GetSafeNormal() * FMath::RandRange(MinLittleRandomMovementDistance, MaxLittleRandomMovementDistance);
-	}
-
-	// Project point to navigation
-	FVector RawTarget = GetActorLocation() + FVector(Rand2D.X, Rand2D.Y, 0.f);
-	FNavLocation NavLocation;
-	if (!NavSys->ProjectPointToNavigation(RawTarget, NavLocation)) return;
-
-	// Get a path to the location
-	UNavigationPath* NavPath = NavSys->FindPathToLocationSynchronously(GetWorld(), GetActorLocation(), NavLocation);
-	if (!NavPath || NavPath->PathPoints.Num() < 2) return;
-
-	// Reset path points
-	PathPoints.Empty();
-	PathPoints = NavPath->PathPoints;
-	PathPointsIndex = 0;
-
-	// Move to the first point
-	MoveToNextPointOnPath(0, 0);
-}
-
-void ASheepBot::MoveToNextPointOnPath(FAIRequestID RequestID, const FPathFollowingResult& Result)
-{
-	if (PathPointsIndex >= PathPoints.Num())
-	{
-		// Fin du chemin, on recommence à gazer
-		StartGazing();
-		return;
-	}
-
-	UE_LOG(LogTemp, Warning, TEXT("MoveToNextPointOnPath, index = %d"), PathPointsIndex);
-
-	AAIController* AIController = Cast<AAIController>(GetController());
-	if (!AIController) return;
-
-	// Ajoute un petit offset aléatoire pour "humaniser"
-	FVector RandomOffset = FVector(FMath::RandRange(-OffsetPointDistance, OffsetPointDistance), FMath::RandRange(-OffsetPointDistance, OffsetPointDistance), 0);
-	FVector TargetLocation = PathPoints[PathPointsIndex] + RandomOffset;
-
-	// Mets à jour l'index pour le prochain appel
-	PathPointsIndex++;
-
-	// Écoute uniquement si on n’est pas déjà lié (évite les empilements)
-	if (auto* PathComp = AIController->GetPathFollowingComponent())
-	{
-		PathComp->OnRequestFinished.Clear();
-		PathComp->OnRequestFinished.AddUObject(this, &ASheepBot::MoveToNextPointOnPath);
-	}
-
-	// Lance le mouvement
-	AIController->MoveToLocation(TargetLocation, 5.f);
+	IsGazing = false;
+	GetWorldTimerManager().ClearTimer(GazeTimer);
 }

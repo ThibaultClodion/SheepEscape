@@ -88,36 +88,41 @@ private:
 	float EmotionalStateLerpFactor = 3.f;
 	float EmotionalState = 0.f;
 
-	/** Gazing Parameters */
-	void StartGazing();
-	void StopGazing();
+	/** Gaze Parameters */
+
+	void StartGaze();
+	void StopGaze();
 
 	bool IsGazing = false;
+	FVector GazeVelocity = FVector::ZeroVector;
+	FTimerHandle GazeTimer;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
 	float MinVelocityToStopGaze = 0.15f;
 
-	// Timer
-	FTimerHandle WaitTimer;
+	// Wait
 	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
 	float MinWaitTime = 3.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
 	float MaxWaitTime = 30.f;
 
-	// Random movement
-	void RandomMovement();
-	void MoveToNextPointOnPath(FAIRequestID RequestID, const FPathFollowingResult& Result);
-	TArray<FVector> PathPoints;
-	int PathPointsIndex;
+	// Little movement
 	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
-	float OffsetPointDistance = 50.f;
+	float MinLittleMovementMagnitude = 0.2f;	
 	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
-	float MinLittleRandomMovementDistance = 50.f;
+	float MaxLittleMovementMagnitude = 0.8f;
 	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
-	float MaxLittleRandomMovementDistance = 150.f;
+	float MinLittleMovementTime = 1.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
-	float MinBigRandomMovementDistance = 200.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
-	float MaxBigRandomMovementDistance = 1000.f;
+	float MaxLittleMovementTime = 2.0f;
 
+	// Big movement
+	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
+	float MinBigMovementMagnitude = 0.7f;
+	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
+	float MaxBigMovementMagnitude = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
+	float MinBigMovementTime = 3.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "Gazing Parameters")
+	float MaxBigMovementTime = 10.f;
 };
