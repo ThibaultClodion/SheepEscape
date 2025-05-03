@@ -47,6 +47,7 @@ private:
 	
 	/** Gaze Parameters */
 	void StartGaze();
+	void SetGazeTimer(float min, float max);
 	void StopGaze();
 
 	bool IsGazing = false;
