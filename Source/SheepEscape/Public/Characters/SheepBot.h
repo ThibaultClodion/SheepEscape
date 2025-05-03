@@ -33,7 +33,7 @@ private:
 	/** Movements */
 	void Move(float DeltaTime);
 	void BoidMovement();
-	void GazingMovement();
+	void GrazingMovement();
 
 	/** Velocity Update */
 	void UpdateVelocity(float DeltaTime);
@@ -45,12 +45,12 @@ private:
 
 	FVector Velocity = FVector::ZeroVector;
 	
-	/** Gaze Parameters */
-	void StartGaze();
-	void SetGazeTimer(float min, float max);
-	void StopGaze();
+	/** Graze Parameters */
+	void StartGraze();
+	void SetGrazeTimer(float min, float max);
+	void StopGraze();
 
-	bool IsGazing = false;
-	FVector GazeVelocity = FVector::ZeroVector;
-	FTimerHandle GazeTimer;
+	bool IsGrazing = false;
+	FVector GrazeVelocity = FVector::ZeroVector;
+	FTimerHandle GrazeTimer;
 };

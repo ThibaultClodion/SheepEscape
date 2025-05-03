@@ -55,41 +55,41 @@ public :
 	UPROPERTY(EditDefaultsOnly, Category = "Escape Parameters")
 	float EmotionalStateLerpFactor = 3.f;
 
-	/** Gaze Parameters */
+	/** Graze Parameters */
 
 	// Movement
-	UPROPERTY(EditDefaultsOnly, Category = "Gaze Parameters")
-	float MinVelocityToStopGaze = 0.25f;
-	UPROPERTY(EditDefaultsOnly, Category = "Gaze Parameters")
-	float GazeCohesionFactor = 0.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Gaze Parameters")
-	float GazeAlignmentFactor = 0.25f;
-	UPROPERTY(EditDefaultsOnly, Category = "Gaze Parameters")
-	float GazeSeparationFactor = 0.25f;
+	UPROPERTY(EditDefaultsOnly, Category = "Graze Parameters")
+	float MinVelocityToStopGraze = 0.25f;
+	UPROPERTY(EditDefaultsOnly, Category = "Graze Parameters")
+	float GrazeCohesionFactor = 0.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Graze Parameters")
+	float GrazeAlignmentFactor = 0.25f;
+	UPROPERTY(EditDefaultsOnly, Category = "Graze Parameters")
+	float GrazeSeparationFactor = 0.25f;
 
 	// Wait
-	UPROPERTY(EditDefaultsOnly, Category = "Gaze wait Parameters")
+	UPROPERTY(EditDefaultsOnly, Category = "Graze wait Parameters")
 	float MinWaitTime = 1.0f;
-	UPROPERTY(EditDefaultsOnly, Category = "Gaze wait Parameters")
+	UPROPERTY(EditDefaultsOnly, Category = "Graze wait Parameters")
 	float MaxWaitTime = 15.f;
 
 	// Little movement
-	UPROPERTY(EditDefaultsOnly, Category = "Gaze Litlle Movement Parameters")
+	UPROPERTY(EditDefaultsOnly, Category = "Graze Litlle Movement Parameters")
 	float MinLittleMovementMagnitude = 0.2f;
-	UPROPERTY(EditDefaultsOnly, Category = "Gaze Litlle Movement Parameters")
+	UPROPERTY(EditDefaultsOnly, Category = "Graze Litlle Movement Parameters")
 	float MaxLittleMovementMagnitude = 0.5f;
-	UPROPERTY(EditDefaultsOnly, Category = "Gaze Litlle Movement Parameters")
+	UPROPERTY(EditDefaultsOnly, Category = "Graze Litlle Movement Parameters")
 	float MinLittleMovementTime = 0.3f;
-	UPROPERTY(EditDefaultsOnly, Category = "Gaze Litlle Movement Parameters")
+	UPROPERTY(EditDefaultsOnly, Category = "Graze Litlle Movement Parameters")
 	float MaxLittleMovementTime = 1.0f;
 
 	// Big movement
-	UPROPERTY(EditDefaultsOnly, Category = "Gaze Big Movement Parameters")
+	UPROPERTY(EditDefaultsOnly, Category = "Graze Big Movement Parameters")
 	float MinBigMovementMagnitude = 0.7f;
-	UPROPERTY(EditDefaultsOnly, Category = "Gaze Big Movement Parameters")
+	UPROPERTY(EditDefaultsOnly, Category = "Graze Big Movement Parameters")
 	float MaxBigMovementMagnitude = 1.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Gaze Big Movement Parameters")
+	UPROPERTY(EditDefaultsOnly, Category = "Graze Big Movement Parameters")
 	float MinBigMovementTime = 1.0f;
-	UPROPERTY(EditDefaultsOnly, Category = "Gaze Big Movement Parameters")
+	UPROPERTY(EditDefaultsOnly, Category = "Graze Big Movement Parameters")
 	float MaxBigMovementTime = 4.0f;
 };
