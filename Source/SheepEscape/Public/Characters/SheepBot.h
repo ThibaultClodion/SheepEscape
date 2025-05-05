@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Characters/BaseCharacter.h"
-#include "Data/SheepData.h"
+#include "Data/BoidData.h"
 #include "SheepBot.generated.h"
 
 UCLASS()
@@ -24,33 +24,31 @@ protected:
 
 private:
 
-	/** Data */
-	UPROPERTY(EditDefaultsOnly, Category = "Sheep Data")
-	USheepData* Data;
+	// Common parameters
 	float MaxSpeed = 450.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Boids Common Parameters")
+	float Acceleration = 250.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Boids Common Parameters")
+	float Inertia = 0.99f;
+	UPROPERTY(EditDefaultsOnly, Category = "Boids Common Parameters", meta = (ClampMin = "0.5", ClampMax = "0.9", UIMin = "0.5", UIMax = "0.9"))
+	float EmotionalStateMultiplier = 0.7f;
 	float EmotionalState = 0.f;
 
 	/** Movements */
 	void Move(float DeltaTime);
-	void BoidMovement();
-	void GrazingMovement();
+	void BoidMovement(float DeltaTime);
 
 	/** Velocity Update */
-	void UpdateVelocity(float DeltaTime);
-	FVector Cohesion();
-	FVector Separation();
-	FVector Alignment();
-	FVector Escape();
-	void EmotionalStateUpdate(float DeltaTime);
-
+	void UpdateVelocity(float DeltaTime, UBoidData* BoidData);
 	FVector Velocity = FVector::ZeroVector;
-	
-	/** Graze Parameters */
-	void StartGraze();
-	void SetGrazeTimer(float min, float max);
-	void StopGraze();
 
-	bool IsGrazing = false;
-	FVector GrazeVelocity = FVector::ZeroVector;
-	FTimerHandle GrazeTimer;
+	FVector Cohesion(UBoidData* BoidData);
+	FVector Separation(UBoidData* BoidData);
+	FVector Alignment(UBoidData* BoidData);
+	FVector Escape(UBoidData* BoidData);
+	void EmotionalStateUpdate(float DeltaTime, UBoidData* BoidData);
+
+	/** Boid Parameters */
+	UPROPERTY(EditDefaultsOnly, Category = "Boid Data")
+	UBoidData* NormalBoidData;
 };

@@ -42,74 +42,44 @@ void ASheepBot::Eliminate()
 
 void ASheepBot::Move(float DeltaTime)
 {
-	UpdateVelocity(DeltaTime);
-
-	if (!IsGrazing)
-	{
-		BoidMovement();
-	}
-	else
-	{
-		GrazingMovement();
-	}
+	BoidMovement(DeltaTime);
 }
 
-void ASheepBot::BoidMovement()
+void ASheepBot::BoidMovement(float DeltaTime)
 {
-	if ((Velocity / MaxSpeed).Length() >= Data->MinVelocityToStopMove)
+	UpdateVelocity(DeltaTime, NormalBoidData);
+
+	if ((Velocity / MaxSpeed).Length() >= NormalBoidData->MinVelocityToStopState)
 	{
 		AddMovementInput(Velocity / MaxSpeed);
 	}
 	// If Velocity is too slow start gazing
 	else
 	{
-		StartGraze();
-	}
-}
-
-void ASheepBot::GrazingMovement()
-{
-	// If Velocity is too high -> stop gazing to follow herd
-	if ((Velocity / MaxSpeed).Length() >= FMath::Max(Data->MinVelocityToStopGraze, GrazeVelocity.Length()))
-	{
-		StopGraze();
-	}
-	else
-	{
-		AddMovementInput(GrazeVelocity);
+		GetCharacterMovement()->StopMovementImmediately();
 		Velocity = FVector::ZeroVector;	// Don't let velocity increment
 	}
 }
 
-void ASheepBot::UpdateVelocity(float DeltaTime)
+void ASheepBot::UpdateVelocity(float DeltaTime, UBoidData* BoidData)
 {
-	EmotionalStateUpdate(DeltaTime);
+	EmotionalStateUpdate(DeltaTime, BoidData);
 
 	FVector TargetVelocity;
-	if (!IsGrazing)
-	{
-		TargetVelocity = Velocity
-			+ (Data->CohesionFactor + (Data->CohesionStressFactor - Data->CohesionFactor) * EmotionalState) * Cohesion()
-			+ (Data->SeparationFactor + (Data->SeparationStressFactor - Data->SeparationFactor) * EmotionalState) * Separation()
-			+ (Data->AlignmentFactor + (Data->AlignmentStressFactor - Data->AlignmentFactor) * EmotionalState) * Alignment()
-			+ EmotionalState * Data->EscapeFactor * Escape();
-	}
-	else
-	{
-		TargetVelocity = Velocity
-			+ (Data->GrazeCohesionFactor + (Data->CohesionStressFactor - Data->GrazeCohesionFactor) * EmotionalState) * Cohesion()
-			+ (Data->GrazeSeparationFactor + (Data->SeparationStressFactor - Data->GrazeSeparationFactor) * EmotionalState) * Separation()
-			+ (Data->GrazeAlignmentFactor + (Data->AlignmentStressFactor - Data->GrazeAlignmentFactor) * EmotionalState) * Alignment()
-			+ EmotionalState * Data->EscapeFactor * Escape();
-	}
+
+	TargetVelocity = Velocity
+		+ (BoidData->CohesionFactor + (BoidData->CohesionStressFactor - BoidData->CohesionFactor) * EmotionalState) * Cohesion(BoidData)
+		+ (BoidData->SeparationFactor + (BoidData->SeparationStressFactor - BoidData->SeparationFactor) * EmotionalState) * Separation(BoidData)
+		+ (BoidData->AlignmentFactor + (BoidData->AlignmentStressFactor - BoidData->AlignmentFactor) * EmotionalState) * Alignment(BoidData)
+		+ EmotionalState * BoidData->EscapeFactor * Escape(BoidData);
 
 
-	Velocity = FMath::Lerp(Velocity, TargetVelocity, DeltaTime * Data->Acceleration);
-	Velocity *= Data->Inertia;
+	Velocity = FMath::Lerp(Velocity, TargetVelocity, DeltaTime * Acceleration);
+	Velocity *= Inertia;
 	Velocity = Velocity.GetClampedToSize(0.f, MaxSpeed);
 }
 
-FVector ASheepBot::Cohesion()
+FVector ASheepBot::Cohesion(UBoidData* BoidData)
 {
 	FVector AveragePosition = FVector::ZeroVector;
 	int nbSheepInCohesionRadius = 0;
@@ -118,7 +88,7 @@ FVector ASheepBot::Cohesion()
 	{
 		if (Sheep == this) continue;
 
-		if ((Sheep->GetActorLocation() - GetActorLocation()).Length() <= Data->CohesionRadius)
+		if ((Sheep->GetActorLocation() - GetActorLocation()).Length() <= BoidData->CohesionRadius)
 		{
 			nbSheepInCohesionRadius++;
 			AveragePosition += Sheep->GetActorLocation();
@@ -130,7 +100,7 @@ FVector ASheepBot::Cohesion()
 	return AveragePosition / nbSheepInCohesionRadius - GetActorLocation();
 }
 
-FVector ASheepBot::Separation()
+FVector ASheepBot::Separation(UBoidData* BoidData)
 {
 	FVector SeparationVelocity = FVector::ZeroVector;
 
@@ -139,16 +109,16 @@ FVector ASheepBot::Separation()
 		if (Sheep == this) continue;
 
 		float Distance = (GetActorLocation() - Sheep->GetActorLocation()).Length();
-		if (Distance <= Data->SeparationRadius)
+		if (Distance <= BoidData->SeparationRadius)
 		{
-			SeparationVelocity += (GetActorLocation() - Sheep->GetActorLocation()) * (Data->SeparationRadius - Distance) / Distance;
+			SeparationVelocity += (GetActorLocation() - Sheep->GetActorLocation()) * (BoidData->SeparationRadius - Distance) / Distance;
 		}
 	}
 
 	return SeparationVelocity;
 }
 
-FVector ASheepBot::Alignment()
+FVector ASheepBot::Alignment(UBoidData* BoidData)
 {
 	FVector AlignmentVelocity = FVector::ZeroVector;
 	int nbSheepsInAlignmentRadius = 0;
@@ -157,7 +127,7 @@ FVector ASheepBot::Alignment()
 	{
 		if (Sheep == this) continue;
 
-		if ((Sheep->GetActorLocation() - GetActorLocation()).Length() <= Data->AlignmentRadius)
+		if ((Sheep->GetActorLocation() - GetActorLocation()).Length() <= BoidData->AlignmentRadius)
 		{
 			nbSheepsInAlignmentRadius++;
 			AlignmentVelocity += Sheep->GetVelocity();
@@ -165,24 +135,16 @@ FVector ASheepBot::Alignment()
 	}
 
 	if (nbSheepsInAlignmentRadius == 0) return FVector::ZeroVector;
-
-	if (IsGrazing)
-	{
-		return AlignmentVelocity / nbSheepsInAlignmentRadius;
-	}
-	else
-	{
-		return AlignmentVelocity / nbSheepsInAlignmentRadius - GetVelocity();
-	}
-
+	
+	return AlignmentVelocity / nbSheepsInAlignmentRadius - GetVelocity();
 }
 
-FVector ASheepBot::Escape()
+FVector ASheepBot::Escape(UBoidData* BoidData)
 {
 	if (GameInstance->Shepherd)
 	{
 		float Distance = (GetActorLocation() - GameInstance->Shepherd->GetActorLocation()).Length();
-		if (Distance <= Data->EscapeRadius)
+		if (Distance <= BoidData->EscapeRadius)
 		{
 			return (GetActorLocation() - GameInstance->Shepherd->GetActorLocation()) / Distance;
 		}
@@ -191,7 +153,7 @@ FVector ASheepBot::Escape()
 	return FVector::ZeroVector;
 }
 
-void ASheepBot::EmotionalStateUpdate(float DeltaTime)
+void ASheepBot::EmotionalStateUpdate(float DeltaTime, UBoidData* BoidData)
 {
 	/* Assign EmotionalState to 0.f if the shepherd is not in the EscapeRadius
 	* Assign EmotionalState to ~1.f if the shepherd is near the sheep */
@@ -199,74 +161,17 @@ void ASheepBot::EmotionalStateUpdate(float DeltaTime)
 	if (GameInstance->Shepherd)
 	{
 		float DistanceToShepherd = (GetActorLocation() - GameInstance->Shepherd->GetActorLocation()).Length();
-		if (DistanceToShepherd <= Data->EscapeRadius)
+		if (DistanceToShepherd <= BoidData->EscapeRadius)
 		{
-			EmotionalState = FMath::Lerp(EmotionalState, DistanceToShepherd / Data->EscapeRadius, Data->EmotionalStateLerpFactor * DeltaTime);
+			EmotionalState = FMath::Lerp(EmotionalState, DistanceToShepherd / BoidData->EscapeRadius, BoidData->EmotionalStateLerpFactor * DeltaTime);
 		}
 		else
 		{
-			EmotionalState = FMath::Lerp(EmotionalState, 0.f, Data->EmotionalStateLerpFactor * DeltaTime);
+			EmotionalState = FMath::Lerp(EmotionalState, 0.f, BoidData->EmotionalStateLerpFactor * DeltaTime);
 		}
 	}
 	else
 	{
 		EmotionalState = 0.f;
 	}
-}
-
-void ASheepBot::StartGraze()
-{
-	// If he wasn't already gazing -> make a pause
-	if (!IsGrazing)
-	{
-		IsGrazing = true;
-		Velocity = FVector::ZeroVector;
-		GetCharacterMovement()->StopMovementImmediately();
-
-		GrazeVelocity = FVector::ZeroVector;
-
-		SetGrazeTimer(Data->MinWaitTime, Data->MaxWaitTime);
-	}
-	else
-	{
-		int Random0To15 = FMath::RandRange(0, 15);
-
-		// Wait
-		if (Random0To15 <= 10)
-		{
-			GrazeVelocity = FVector::ZeroVector;
-
-			SetGrazeTimer(Data->MinWaitTime, Data->MaxWaitTime);
-		}
-
-		// Little Movement to another graze position
-		else if (Random0To15 <= 14)
-		{
-			FVector2D RandomPoint = FMath::RandPointInCircle(1.f).GetSafeNormal() * FMath::RandRange(Data->MinLittleMovementMagnitude, Data->MaxLittleMovementMagnitude);
-			GrazeVelocity = FVector(RandomPoint.X, RandomPoint.Y, 0.f);
-
-			SetGrazeTimer(Data->MinLittleMovementTime, Data->MaxLittleMovementTime);
-		}
-
-		// Big Movement to another graze position
-		else if (Random0To15 == 15)
-		{
-			FVector2D RandomPoint = FMath::RandPointInCircle(1.f).GetSafeNormal() * FMath::RandRange(Data->MinBigMovementMagnitude, Data->MaxBigMovementMagnitude);
-			GrazeVelocity = FVector(RandomPoint.X, RandomPoint.Y, 0.f);
-
-			SetGrazeTimer(Data->MinBigMovementTime, Data->MaxBigMovementTime);
-		}
-	}
-}
-
-void ASheepBot::SetGrazeTimer(float min, float max)
-{
-	const float GazingTime = FMath::RandRange(min, max);
-	GetWorldTimerManager().SetTimer(GrazeTimer, this, &ASheepBot::StartGraze, GazingTime);
-}
-
-void ASheepBot::StopGraze()
-{
-	IsGrazing = false;
-	GetWorldTimerManager().ClearTimer(GrazeTimer);
 }
