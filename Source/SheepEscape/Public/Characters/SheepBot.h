@@ -39,16 +39,18 @@ private:
 	void BoidMovement(float DeltaTime);
 
 	/** Velocity Update */
-	void UpdateVelocity(float DeltaTime, UBoidData* BoidData);
+	void UpdateVelocity(float DeltaTime);
 	FVector Velocity = FVector::ZeroVector;
 
-	FVector Cohesion(UBoidData* BoidData);
-	FVector Separation(UBoidData* BoidData);
-	FVector Alignment(UBoidData* BoidData);
-	FVector Escape(UBoidData* BoidData);
-	void EmotionalStateUpdate(float DeltaTime, UBoidData* BoidData);
+	FVector Cohesion();
+	FVector Separation();
+	FVector Alignment();
+	FVector Escape();
+	void EmotionalStateUpdate(float DeltaTime);
+	float CloseToShepherdNormalize(float DistanceToShepherd);
+	float CloseToMaxSpeedNormalize();
 
 	/** Boid Parameters */
 	UPROPERTY(EditDefaultsOnly, Category = "Boid Data")
-	UBoidData* NormalBoidData;
+	UBoidData* BoidData;
 };

@@ -47,9 +47,9 @@ void ASheepBot::Move(float DeltaTime)
 
 void ASheepBot::BoidMovement(float DeltaTime)
 {
-	UpdateVelocity(DeltaTime, NormalBoidData);
+	UpdateVelocity(DeltaTime);
 
-	if ((Velocity / MaxSpeed).Length() >= NormalBoidData->MinVelocityToStopState)
+	if ((Velocity / MaxSpeed).Length() >= BoidData->MinVelocityToStopState || EmotionalState >= 0.08f)
 	{
 		AddMovementInput(Velocity / MaxSpeed);
 	}
@@ -61,17 +61,17 @@ void ASheepBot::BoidMovement(float DeltaTime)
 	}
 }
 
-void ASheepBot::UpdateVelocity(float DeltaTime, UBoidData* BoidData)
+void ASheepBot::UpdateVelocity(float DeltaTime)
 {
-	EmotionalStateUpdate(DeltaTime, BoidData);
+	EmotionalStateUpdate(DeltaTime);
 
 	FVector TargetVelocity;
 
 	TargetVelocity = Velocity
-		+ (BoidData->CohesionFactor + (BoidData->CohesionStressFactor - BoidData->CohesionFactor) * EmotionalState) * Cohesion(BoidData)
-		+ (BoidData->SeparationFactor + (BoidData->SeparationStressFactor - BoidData->SeparationFactor) * EmotionalState) * Separation(BoidData)
-		+ (BoidData->AlignmentFactor + (BoidData->AlignmentStressFactor - BoidData->AlignmentFactor) * EmotionalState) * Alignment(BoidData)
-		+ EmotionalState * BoidData->EscapeFactor * Escape(BoidData);
+		+ (BoidData->CohesionFactor + (BoidData->CohesionStressFactor - BoidData->CohesionFactor) * EmotionalState) * Cohesion()
+		+ (BoidData->SeparationFactor + (BoidData->SeparationStressFactor - BoidData->SeparationFactor) * EmotionalState) * Separation()
+		+ (BoidData->AlignmentFactor + (BoidData->AlignmentStressFactor - BoidData->AlignmentFactor) * EmotionalState) * Alignment()
+		+ BoidData->EscapeFactor * EmotionalState  * Escape();
 
 
 	Velocity = FMath::Lerp(Velocity, TargetVelocity, DeltaTime * Acceleration);
@@ -79,7 +79,7 @@ void ASheepBot::UpdateVelocity(float DeltaTime, UBoidData* BoidData)
 	Velocity = Velocity.GetClampedToSize(0.f, MaxSpeed);
 }
 
-FVector ASheepBot::Cohesion(UBoidData* BoidData)
+FVector ASheepBot::Cohesion()
 {
 	FVector AveragePosition = FVector::ZeroVector;
 	int nbSheepInCohesionRadius = 0;
@@ -100,7 +100,7 @@ FVector ASheepBot::Cohesion(UBoidData* BoidData)
 	return AveragePosition / nbSheepInCohesionRadius - GetActorLocation();
 }
 
-FVector ASheepBot::Separation(UBoidData* BoidData)
+FVector ASheepBot::Separation()
 {
 	FVector SeparationVelocity = FVector::ZeroVector;
 
@@ -118,7 +118,7 @@ FVector ASheepBot::Separation(UBoidData* BoidData)
 	return SeparationVelocity;
 }
 
-FVector ASheepBot::Alignment(UBoidData* BoidData)
+FVector ASheepBot::Alignment()
 {
 	FVector AlignmentVelocity = FVector::ZeroVector;
 	int nbSheepsInAlignmentRadius = 0;
@@ -139,7 +139,7 @@ FVector ASheepBot::Alignment(UBoidData* BoidData)
 	return AlignmentVelocity / nbSheepsInAlignmentRadius - GetVelocity();
 }
 
-FVector ASheepBot::Escape(UBoidData* BoidData)
+FVector ASheepBot::Escape()
 {
 	if (GameInstance->Shepherd)
 	{
@@ -153,7 +153,7 @@ FVector ASheepBot::Escape(UBoidData* BoidData)
 	return FVector::ZeroVector;
 }
 
-void ASheepBot::EmotionalStateUpdate(float DeltaTime, UBoidData* BoidData)
+void ASheepBot::EmotionalStateUpdate(float DeltaTime)
 {
 	/* Assign EmotionalState to 0.f if the shepherd is not in the EscapeRadius
 	* Assign EmotionalState to ~1.f if the shepherd is near the sheep */
@@ -163,15 +163,35 @@ void ASheepBot::EmotionalStateUpdate(float DeltaTime, UBoidData* BoidData)
 		float DistanceToShepherd = (GetActorLocation() - GameInstance->Shepherd->GetActorLocation()).Length();
 		if (DistanceToShepherd <= BoidData->EscapeRadius)
 		{
-			EmotionalState = FMath::Lerp(EmotionalState, DistanceToShepherd / BoidData->EscapeRadius, BoidData->EmotionalStateLerpFactor * DeltaTime);
+			float TargetEmotionalState = FMath::Clamp(CloseToShepherdNormalize(DistanceToShepherd) + CloseToMaxSpeedNormalize() / 2.f, 0, 1.f);
+			EmotionalState = FMath::Lerp(EmotionalState, CloseToShepherdNormalize(DistanceToShepherd), BoidData->EmotionalIncreaseLerpFactor * DeltaTime);
+		}
+
+		else
+		{
+			EmotionalState = FMath::Lerp(EmotionalState, CloseToMaxSpeedNormalize() / 2.f, BoidData->EmotionalIncreaseLerpFactor * DeltaTime);
+		}
+	}
+
+	else
+	{
+		if ((Velocity / MaxSpeed).Length() >= BoidData->MinVelocityToStopState)
+		{
+			EmotionalState = FMath::Lerp(EmotionalState, CloseToMaxSpeedNormalize() / 2.f, BoidData->EmotionalIncreaseLerpFactor * DeltaTime);
 		}
 		else
 		{
-			EmotionalState = FMath::Lerp(EmotionalState, 0.f, BoidData->EmotionalStateLerpFactor * DeltaTime);
+			EmotionalState = FMath::Lerp(EmotionalState, 0.f, BoidData->EmotionalDecreaseLerpFactor * DeltaTime * 5);
 		}
 	}
-	else
-	{
-		EmotionalState = 0.f;
-	}
+}
+
+float ASheepBot::CloseToShepherdNormalize(float DistanceToShepherd)
+{
+	return DistanceToShepherd / BoidData->EscapeRadius;
+}
+
+float ASheepBot::CloseToMaxSpeedNormalize()
+{
+	return Velocity.Length() / MaxSpeed;
 }
