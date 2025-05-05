@@ -42,22 +42,40 @@ void ASheepBot::Eliminate()
 
 void ASheepBot::Move(float DeltaTime)
 {
-	BoidMovement(DeltaTime);
-}
-
-void ASheepBot::BoidMovement(float DeltaTime)
-{
 	UpdateVelocity(DeltaTime);
 
-	if ((Velocity / MaxSpeed).Length() >= BoidData->MinVelocityToStopState || EmotionalState >= 0.08f)
+	if (IsGrazing)
+	{
+		GrazeMovement();
+	}
+	else
+	{
+		BoidMovement();
+	}
+}
+
+void ASheepBot::BoidMovement()
+{
+	if ((Velocity / MaxSpeed).Length() >= BoidData->MinVelocityToStopBoidMove || EmotionalState >= 0.08f)
 	{
 		AddMovementInput(Velocity / MaxSpeed);
 	}
-	// If Velocity is too slow start gazing
 	else
 	{
-		GetCharacterMovement()->StopMovementImmediately();
-		Velocity = FVector::ZeroVector;	// Don't let velocity increment
+		StartGrazing();
+	}
+}
+
+void ASheepBot::GrazeMovement()
+{
+	if ((Velocity / MaxSpeed).Length() >= FMath::Max(MaxVelocityToStopGraze, GrazeVelocity.Length()))
+	{
+		StopGrazing();
+	}
+	else
+	{
+		AddMovementInput(GrazeVelocity);
+		Velocity = FVector::ZeroVector;
 	}
 }
 
@@ -175,7 +193,7 @@ void ASheepBot::EmotionalStateUpdate(float DeltaTime)
 
 	else
 	{
-		if ((Velocity / MaxSpeed).Length() >= BoidData->MinVelocityToStopState)
+		if ((Velocity / MaxSpeed).Length() >= BoidData->MinVelocityToStopBoidMove)
 		{
 			EmotionalState = FMath::Lerp(EmotionalState, CloseToMaxSpeedNormalize() / 2.f, BoidData->EmotionalIncreaseLerpFactor * DeltaTime);
 		}
@@ -194,4 +212,66 @@ float ASheepBot::CloseToShepherdNormalize(float DistanceToShepherd)
 float ASheepBot::CloseToMaxSpeedNormalize()
 {
 	return Velocity.Length() / MaxSpeed;
+}
+
+void ASheepBot::StartGrazing()
+{
+	// If he wasn't already grazing, wait
+	if (!IsGrazing)
+	{
+		IsGrazing = true;
+		GetCharacterMovement()->StopMovementImmediately();
+		Velocity = FVector::ZeroVector;
+
+		Wait();
+	}
+	else
+	{
+		int Random1To20 = FMath::RandRange(1, 20);
+
+		if (Random1To20 <= 14)
+		{
+			Wait();
+		}
+		else if (Random1To20 <= 19)
+		{
+			WalkToOtherGrazingSpot();
+		}
+		else
+		{
+			RunToOtherGrazingSpot();
+		}
+	}
+}
+
+void ASheepBot::SetGrazingTimer(float min, float max)
+{
+	const float GazingTime = FMath::RandRange(min, max);
+	GetWorldTimerManager().SetTimer(GrazeTimerHandle, this, &ASheepBot::StartGrazing, GazingTime);
+}
+
+void ASheepBot::StopGrazing()
+{
+	IsGrazing = false;
+	GetWorldTimerManager().ClearTimer(GrazeTimerHandle);
+}
+
+void ASheepBot::Wait()
+{
+	GrazeVelocity = FVector::ZeroVector;
+	SetGrazingTimer(MinWaitTime, MaxWaitTime);
+}
+
+void ASheepBot::WalkToOtherGrazingSpot()
+{
+	FVector2D RandomPoint = FMath::RandPointInCircle(1.f).GetSafeNormal() * FMath::RandRange(MinWalkVelocity, MaxWalkVelocity);
+	GrazeVelocity = FVector(RandomPoint.X, RandomPoint.Y, 0.f);
+	SetGrazingTimer(MinWalkTime, MaxWalkTime);
+}
+
+void ASheepBot::RunToOtherGrazingSpot()
+{
+	FVector2D RandomPoint = FMath::RandPointInCircle(1.f).GetSafeNormal() * FMath::RandRange(MinRunVelocity, MaxRunVelocity);
+	GrazeVelocity = FVector(RandomPoint.X, RandomPoint.Y, 0.f);
+	SetGrazingTimer(MinRunTime, MaxRunTime);
 }

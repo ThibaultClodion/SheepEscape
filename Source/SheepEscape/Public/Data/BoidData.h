@@ -11,7 +11,7 @@ class SHEEPESCAPE_API UBoidData : public UDataAsset
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Stop Parameters")
-	float MinVelocityToStopState = 0.2f;
+	float MinVelocityToStopBoidMove = 0.2f;
 
 	// Cohesion parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Cohesion Parameters")
