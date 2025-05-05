@@ -11,7 +11,7 @@ class SHEEPESCAPE_API UBoidData : public UDataAsset
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Stop Parameters")
-	float MinVelocityToStopState = 0.2f;
+	float MinVelocityToStopState = 0.15;
 
 	// Cohesion parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Cohesion Parameters")
@@ -27,7 +27,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Separation Parameters")
 	float SeparationStressFactor = 0.1f;
 	UPROPERTY(EditDefaultsOnly, Category = "Separation Parameters", meta = (ClampMin = "100.0", ClampMax = "300.0", UIMin = "100.0", UIMax = "300.0"))
-	float SeparationRadius = 220.f;
+	float SeparationRadius = 200.f;
 
 	// Alignment parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Alignment Parameters")
@@ -35,7 +35,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Alignment Parameters")
 	float AlignmentStressFactor = 0.15f;
 	UPROPERTY(EditDefaultsOnly, Category = "Alignment Parameters", meta = (ClampMin = "100.0", ClampMax = "300.0", UIMin = "100.0", UIMax = "300.0"))
-	float AlignmentRadius = 200.f;
+	float AlignmentRadius = 300.f;
 
 	// Escape parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Escape Parameters")

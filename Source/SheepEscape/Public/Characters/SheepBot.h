@@ -27,9 +27,9 @@ private:
 	// Common parameters
 	float MaxSpeed = 450.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Boids Common Parameters")
-	float Acceleration = 250.f;
+	float Acceleration = 300.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Boids Common Parameters")
-	float Inertia = 0.99f;
+	float Inertia = 0.995f;
 	UPROPERTY(EditDefaultsOnly, Category = "Boids Common Parameters", meta = (ClampMin = "0.5", ClampMax = "0.9", UIMin = "0.5", UIMax = "0.9"))
 	float EmotionalStateMultiplier = 0.7f;
 	float EmotionalState = 0.f;
