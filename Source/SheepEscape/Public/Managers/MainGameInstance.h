@@ -26,6 +26,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShepherdElimination();
 
+	void RemoveScore(int32 PlayerID);
+
 	/** Sheeps herd data */
 	UFUNCTION(BlueprintCallable)
 	void InitializeSheeps();

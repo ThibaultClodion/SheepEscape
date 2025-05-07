@@ -12,6 +12,11 @@ void UMainGameInstance::Init()
 	ScoreManager = NewObject<UScoreManager>(this, UScoreManager::StaticClass());
 }
 
+void UMainGameInstance::RemoveScore(int32 PlayerID)
+{
+	ScoreManager->RemoveActions(PlayerID);
+}
+
 void UMainGameInstance::InitializeSheeps()
 {
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASheepBot::StaticClass(), Sheeps);
