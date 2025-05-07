@@ -2,6 +2,7 @@
 
 #include "Gameplay/Cameras/Camera.h"
 #include "Characters/BaseCharacter.h"
+#include "Characters/ShepherdCharacter.h"
 #include "Gameplay/Signs/BaseSign.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/SphereComponent.h"
@@ -69,7 +70,7 @@ void ACamera::UpdateTargets()
 		}
 	}
 
-	//Add Signs
+	// Add Signs
 	TArray<AActor*> SignTargets;
 	if (GetWorld())
 	{
@@ -82,11 +83,28 @@ void ACamera::UpdateTargets()
 	}
 
 	Targets = NewTargets;
+
+	// Add Shepherd
+	if (GetWorld())
+	{
+		Shepherd = UGameplayStatics::GetActorOfClass(GetWorld(), AShepherdCharacter::StaticClass());
+	}
 }
 
 void ACamera::MoveToCenterLocation(float DeltaTime)
 {
-	FVector NewLocation = FMath::Lerp(GetActorLocation(), UGameplayStatics::GetActorArrayAverageLocation(Targets), DeltaTime * 2);
+	FVector NewLocation;
+
+	// If Shepherd not null -> focus on him
+	if (Shepherd)
+	{
+		NewLocation = FMath::Lerp(GetActorLocation(), Shepherd->GetActorLocation() + Shepherd->GetVelocity() * ShepherdVelocityFollowFactor, DeltaTime * MovementLerpFactor);
+	}
+	else
+	{
+		NewLocation = FMath::Lerp(GetActorLocation(), UGameplayStatics::GetActorArrayAverageLocation(Targets), DeltaTime * MovementLerpFactor);
+	}
+	
 	VisualSphere->SetWorldLocation(NewLocation);
 }
 

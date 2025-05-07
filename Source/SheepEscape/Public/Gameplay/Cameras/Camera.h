@@ -38,6 +38,7 @@ private:
 	float CustomDistanceWithRatio(FVector V1, FVector V2);
 
 	TArray<AActor*> Targets;
+	AActor* Shepherd;
 
 	/** Visual Sphere */
 	UPROPERTY(VisibleAnywhere)
@@ -47,13 +48,20 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArm;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Zoom Parameters")
 	float MinArmLength = 1800.f;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Zoom Parameters")
 	float MaxArmLength = 2400.f;
 
 	/** View Camera */
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* ViewCamera;
+
+	/** Camera Parameters */
+	UPROPERTY(EditDefaultsOnly, Category = "Follow Parameters")
+	float ShepherdVelocityFollowFactor = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Follow Parameters")
+	float MovementLerpFactor = 2.f;
 };
