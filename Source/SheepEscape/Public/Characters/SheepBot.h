@@ -24,6 +24,12 @@ protected:
 
 private:
 
+	// Elimination
+	ASheepCharacter* GetNearestSheepCharacter();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Elimination Parameters")
+	float MaxDistanceToEarnScore = 3000.f;
+
 	// Parameters
 	float MaxSpeed = 450.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Boids Common Parameters")

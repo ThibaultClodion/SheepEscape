@@ -7,6 +7,7 @@
 #include "AIController.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include <Kismet/GameplayStatics.h>
 
 ASheepBot::ASheepBot()
 {
@@ -34,10 +35,45 @@ void ASheepBot::Eliminate()
 
 	Super::Eliminate();
 
-	if(PushedBy) PushedBy->AddEliminateSheepAction();
+	if (PushedBy)
+	{
+		PushedBy->AddEliminateSheepAction();
+	}
+	else if(ASheepCharacter* SheepCharacter = GetNearestSheepCharacter())
+	{
+		if ((SheepCharacter->GetActorLocation() - GetActorLocation()).Length() <= MaxDistanceToEarnScore)
+		{
+			SheepCharacter->AddEliminateSheepAction();
+		}
+	}
 
 	GameInstance->SheepElimination(this);
 	Destroy();
+}
+
+ASheepCharacter* ASheepBot::GetNearestSheepCharacter()
+{
+	TArray<AActor*> SheepCharacters;
+	if (GetWorld())
+	{
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASheepCharacter::StaticClass(), SheepCharacters);
+	}
+
+	ASheepCharacter* NearestCharacter = NULL;
+	float MaxDistance = MAX_flt;
+	for (AActor* Actor : SheepCharacters)
+	{
+		if (ASheepCharacter* SheepCharacter = Cast<ASheepCharacter>(Actor))
+		{
+			if (!SheepCharacter->IsHidden() && (SheepCharacter->GetActorLocation() - GetActorLocation()).Length() <= MaxDistance)
+			{
+				MaxDistance = (SheepCharacter->GetActorLocation() - GetActorLocation()).Length();
+				NearestCharacter = SheepCharacter;
+			}
+		}
+	}
+
+	return NearestCharacter;
 }
 
 void ASheepBot::Move(float DeltaTime)
