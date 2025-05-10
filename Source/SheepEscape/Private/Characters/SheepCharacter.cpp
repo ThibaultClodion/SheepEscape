@@ -32,6 +32,17 @@ void ASheepCharacter::Eliminate()
 	GameInstance->RemoveScore(Cast<APlayerController>(Controller)->NetPlayerIndex);
 }
 
+void ASheepCharacter::Hit()
+{
+	HealthPoints--;
+	ChangeColor(HealthPoints);
+
+	if (HealthPoints == 0)
+	{
+		Eliminate();
+	}
+}
+
 void ASheepCharacter::Action(const FInputActionValue& Value)
 {
 	Heabutt();

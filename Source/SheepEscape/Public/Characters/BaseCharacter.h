@@ -28,7 +28,7 @@ public:
 	bool IsEliminate();
 
 	/** Push */
-	void Pushed(ASheepCharacter* SheepCharacter, FVector Direction, float HeadbuttForceScale);
+    void Pushed(ASheepCharacter* SheepCharacter, FVector Direction, float HeadbuttForceScale);
 
 	UPROPERTY(BlueprintReadOnly)
 	ASheepCharacter* PushedBy;
@@ -38,11 +38,20 @@ protected:
 
 	UMainGameInstance* GameInstance;
 
-	/** Push Timers */
+	/** Push */
 	void StartPushTimer(ASheepCharacter* Pusher);
 	void StopPushTimer();
 	void InterruptPushTimer();
+	virtual void Hit();
 
 	float PushedTime = 2.f;
 	FTimerHandle PushedTimer;
+
+	/** Stun */
+	void StartStun();
+	void StopStun();
+
+	float StunTime = 1.f;
+	float MaxSpeed;
+	FTimerHandle StunTimer;
 };

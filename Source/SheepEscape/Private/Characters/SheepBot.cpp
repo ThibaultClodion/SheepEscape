@@ -51,6 +51,17 @@ void ASheepBot::Eliminate()
 	Destroy();
 }
 
+void ASheepBot::Hit()
+{
+	HealthPoints--;
+	ChangeColor(HealthPoints);
+
+	if (HealthPoints == 0)
+	{
+		Eliminate();
+	}
+}
+
 ASheepCharacter* ASheepBot::GetNearestSheepCharacter()
 {
 	TArray<AActor*> SheepCharacters;

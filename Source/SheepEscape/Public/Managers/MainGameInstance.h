@@ -15,10 +15,13 @@ class SHEEPESCAPE_API UMainGameInstance : public UGameInstance
 public:
 	virtual void Init() override;
 
+	UPROPERTY(BlueprintReadWrite)
+	bool IsInGame;
+
+	/** Actions and Score */
 	UPROPERTY(BlueprintReadOnly)
 	UScoreManager* ScoreManager;
 
-	/** Actions and Score */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void AddAction(APlayerController* PlayerController, EScoreAction Action);
 	UFUNCTION(BlueprintImplementableEvent)

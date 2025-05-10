@@ -27,9 +27,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddSurviveAction();
 
+protected:
+	virtual void Hit() override;
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void ChangeColor(int Health);
+
+
 private:
 	/** Attributes */
 	float MaxSpeed = 450.f;
+	int HealthPoints = 2;
 
 	/** Heabutt */
 	void Heabutt();

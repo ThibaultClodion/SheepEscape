@@ -16,17 +16,21 @@ public:
 	ASheepBot();
 
 	virtual void Tick(float DeltaTime) override;
-
 	virtual void Eliminate() override;
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void Hit() override;
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void ChangeColor(int Health);
 
 private:
 
 	// Elimination
 	ASheepCharacter* GetNearestSheepCharacter();
 
+	int HealthPoints = 2;
 	UPROPERTY(EditDefaultsOnly, Category = "Elimination Parameters")
 	float MaxDistanceToEarnScore = 3000.f;
 
