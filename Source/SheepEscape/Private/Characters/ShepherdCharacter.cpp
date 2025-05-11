@@ -10,14 +10,26 @@
 
 AShepherdCharacter::AShepherdCharacter()
 {
-	GetCharacterMovement()->MaxWalkSpeed = MaxSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
 	SetupCrookHitTraces();
+}
+
+void AShepherdCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Convert durations to lerp factors
+	LooseStaminaLerpFactor = -FMath::Loge(0.01f) / LooseStaminaDuration;
+	RegainStaminaLerpFactor = -FMath::Loge(0.01f) / RegainStaminaDuration;
 }
 
 void AShepherdCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	UpdateSpeed(DeltaTime);
+	UpdateStamina(DeltaTime);
 }
 
 void AShepherdCharacter::SetupCrookHitTraces()
@@ -42,6 +54,48 @@ void AShepherdCharacter::Eliminate()
 void AShepherdCharacter::Action(const FInputActionValue& Value)
 {
 	CrookHit();
+}
+
+void AShepherdCharacter::StartRun(const FInputActionValue& Value)
+{
+	if (FMath::Abs(Stamina - 1.f) <= 0.01f)
+	{
+		IsRunning = true;
+	}
+}
+
+void AShepherdCharacter::StopRun(const FInputActionValue& Value)
+{
+	IsRunning = false;
+}
+
+void AShepherdCharacter::UpdateSpeed(float DeltaTime)
+{
+	if (IsRunning)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = FMath::Lerp(GetCharacterMovement()->MaxWalkSpeed, RunSpeed, DeltaTime * SpeedLerpFactor);
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = FMath::Lerp(GetCharacterMovement()->MaxWalkSpeed, WalkSpeed, DeltaTime * SpeedLerpFactor);
+	}
+}
+
+void AShepherdCharacter::UpdateStamina(float DeltaTime)
+{
+	if (Stamina <= 0.01f)
+	{
+		StopRun(NULL);
+	}
+
+	if (IsRunning)
+	{
+		Stamina = FMath::Lerp(Stamina, 0.f, DeltaTime * LooseStaminaLerpFactor);
+	}
+	else
+	{
+		Stamina = FMath::Lerp(Stamina, 1.f, DeltaTime * RegainStaminaLerpFactor);
+	}
 }
 
 void AShepherdCharacter::AddRescueSheepAction()

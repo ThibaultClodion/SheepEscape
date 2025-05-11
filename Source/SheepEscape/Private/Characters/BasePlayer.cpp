@@ -18,6 +18,8 @@ void ABasePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABasePlayer::Move);
 		EnhancedInputComponent->BindAction(BaseAction, ETriggerEvent::Started, this, &ABasePlayer::Action);
+		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Started, this, &ABasePlayer::StartRun);
+		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Completed, this, &ABasePlayer::StopRun);
 	}
 }
 
@@ -32,6 +34,10 @@ void ABasePlayer::Move(const FInputActionValue& Value)
 }
 
 void ABasePlayer::Action(const FInputActionValue& Value){}
+
+void ABasePlayer::StartRun(const FInputActionValue& Value){}
+
+void ABasePlayer::StopRun(const FInputActionValue& Value){}
 
 void ABasePlayer::InitializeMappingContext()
 {

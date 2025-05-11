@@ -21,6 +21,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void Move(const FInputActionValue& Value);
 	virtual void Action(const FInputActionValue& Value);
+	virtual void StartRun(const FInputActionValue& Value);
+	virtual void StopRun(const FInputActionValue& Value);
 
 protected:
 	virtual void BeginPlay() override;
@@ -41,4 +43,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* BaseAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* RunAction;
 };
