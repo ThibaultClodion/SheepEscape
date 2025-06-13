@@ -15,9 +15,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Speed Parameters")
 	float Acceleration = 300.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Speed Parameters")
+	float Deceleration = 4.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "Speed Parameters")
 	float Inertia = 0.995f;
 	UPROPERTY(EditDefaultsOnly, Category = "Speed Parameters")
-	float MinVelocityBoidMove = 0.2f;
+	float MinDecelerationVelocity = 0.25f;
+	UPROPERTY(EditDefaultsOnly, Category = "Speed Parameters")
+	float MinVelocity = 0.1f;
+
 
 	// Elimination Parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Elimination Parameters")
@@ -57,7 +62,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Emotional Parameters")
 	float EmotionalIncreaseFactor = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Emotional Parameters")
-	float EmotionalDecreaseFactor = 5.f;
+	float EmotionalDecreaseFactor = 10.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Emotional Parameters", meta = (ClampMin = "0.5", ClampMax = "0.9", UIMin = "0.5", UIMax = "0.9"))
 	float EmotionalStateMultiplier = 0.7f;
 };

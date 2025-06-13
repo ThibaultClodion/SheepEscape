@@ -51,5 +51,5 @@ private:
 	FVector Escape();
 	void EmotionalStateUpdate(float DeltaTime);
 	float CloseToShepherdNormalize(float DistanceToShepherd);
-	float CloseToMaxSpeedNormalize();
+	float NormalizeVelocity();
 };
