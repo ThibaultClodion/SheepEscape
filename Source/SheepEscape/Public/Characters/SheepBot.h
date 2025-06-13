@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Characters/BaseCharacter.h"
-#include "Data/BoidData.h"
+#include "Data/SheepBotData.h"
 #include "SheepBot.generated.h"
 
 UCLASS()

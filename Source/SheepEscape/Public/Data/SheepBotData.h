@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "BoidData.generated.h"
+#include "SheepBotData.generated.h"
 
 UCLASS(BlueprintType)
 class SHEEPESCAPE_API USheepBotData : public UDataAsset
