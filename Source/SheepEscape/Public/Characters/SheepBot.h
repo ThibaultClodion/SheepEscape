@@ -39,11 +39,10 @@ private:
 
 	/** Movements */
 	void Move(float DeltaTime);
-	void BoidMovement();
-	void GrazeMovement();
 
 	/** Velocity Update */
 	void UpdateVelocity(float DeltaTime);
+	FVector ComputeVelocity();
 	FVector Velocity = FVector::ZeroVector;
 
 	FVector Cohesion();
@@ -53,17 +52,4 @@ private:
 	void EmotionalStateUpdate(float DeltaTime);
 	float CloseToShepherdNormalize(float DistanceToShepherd);
 	float CloseToMaxSpeedNormalize();
-
-	/** Grazing */
-	void StartGrazing();
-	void SetGrazingTimer(float min, float max);
-	void StopGrazing();
-
-	bool IsGrazing = false;
-	FVector GrazeVelocity = FVector::ZeroVector;
-	FTimerHandle GrazeTimerHandle;
-
-	void Wait();
-	void WalkToOtherGrazingSpot();
-	void RunToOtherGrazingSpot();
 };

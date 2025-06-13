@@ -16,12 +16,12 @@ public:
 	float Acceleration = 300.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Speed Parameters")
 	float Inertia = 0.995f;
+	UPROPERTY(EditDefaultsOnly, Category = "Speed Parameters")
+	float MinVelocityBoidMove = 0.2f;
 
-	// Stop Parameters
-	UPROPERTY(EditDefaultsOnly, Category = "Stop Parameters")
-	float MinVelocityToStopBoidMove = 0.2f;
-	UPROPERTY(EditDefaultsOnly, Category = "Stop Parameters")
-	float MaxVelocityToStopGraze = 0.3f;
+	// Elimination Parameters
+	UPROPERTY(EditDefaultsOnly, Category = "Elimination Parameters")
+	float MaxDistanceToEarnScore = 3000.f;
 
 	// Cohesion Parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Cohesion Parameters")
@@ -55,39 +55,9 @@ public:
 
 	// Emotional Parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Emotional Parameters")
-	float EmotionalIncreaseLerpFactor = 3.f;
+	float EmotionalIncreaseFactor = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Emotional Parameters")
-	float EmotionalDecreaseLerpFactor = 1.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Emotional", meta = (ClampMin = "0.5", ClampMax = "0.9", UIMin = "0.5", UIMax = "0.9"))
+	float EmotionalDecreaseFactor = 5.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Emotional Parameters", meta = (ClampMin = "0.5", ClampMax = "0.9", UIMin = "0.5", UIMax = "0.9"))
 	float EmotionalStateMultiplier = 0.7f;
-
-	// Grazing - Wait Parameters
-	UPROPERTY(EditDefaultsOnly, Category = "Grazing Parameters")
-	float MinWaitTime = 1.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Grazing Parameters")
-	float MaxWaitTime = 10.f;
-
-	// Grazing - Walk Parameters
-	UPROPERTY(EditDefaultsOnly, Category = "Grazing Parameters")
-	float MinWalkTime = 1.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Grazing Parameters")
-	float MaxWalkTime = 2.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Grazing Parameters")
-	float MinWalkVelocity = 0.2f;
-	UPROPERTY(EditDefaultsOnly, Category = "Grazing Parameters")
-	float MaxWalkVelocity = 0.7f;
-
-	// Grazing - Run Parameters
-	UPROPERTY(EditDefaultsOnly, Category = "Grazing Parameters")
-	float MinRunTime = 1.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Grazing Parameters")
-	float MaxRunTime = 2.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Grazing Parameters")
-	float MinRunVelocity = 0.7f;
-	UPROPERTY(EditDefaultsOnly, Category = "Grazing Parameters")
-	float MaxRunVelocity = 1.f;
-
-	// Elimination Parameters
-	UPROPERTY(EditDefaultsOnly, Category = "Elimination Parameters")
-	float MaxDistanceToEarnScore = 3000.f;
 };
