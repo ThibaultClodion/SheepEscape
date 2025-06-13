@@ -26,9 +26,9 @@ protected:
 
 	/** Blueprints Events */
 	UFUNCTION(BlueprintImplementableEvent)
-	void AllSheepsIn();
+	void ShepherdIn();
 	UFUNCTION(BlueprintImplementableEvent)
-	void CancelAllSheepsIn();
+	void CancelShepherdIn();
 
 	UPROPERTY(BlueprintReadOnly)
 	int NbSheepsInside;

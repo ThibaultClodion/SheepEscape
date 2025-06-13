@@ -3,10 +3,10 @@
 #include "Gameplay/Weels/BaseWeel.h"
 #include "Components/SphereComponent.h"
 #include "Characters/BaseCharacter.h"
-#include "Characters/SheepBot.h"
 #include "Managers/MainGameInstance.h"
 #include "Characters/SheepCharacter.h"
-#include "Kismet/GameplayStatics.h"
+#include "Characters/ShepherdCharacter.h"
+#include "Characters/SheepBot.h"
 
 
 // Sets default values
@@ -85,18 +85,9 @@ void ABaseWeel::ActorJoin(AActor* Actor)
 	{
 		NbSheepsInside++;
 	}
-
-	TArray<AActor*> SheepsBot;
-	TArray<AActor*> SheepsPlayer;
-	if (UWorld* World = GetWorld())
+	else if (Cast<AShepherdCharacter>(Actor))
 	{
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASheepBot::StaticClass(), SheepsBot);
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASheepCharacter::StaticClass(), SheepsPlayer);
-	}
-	
-	if (NbSheepsInside == GameInstance->Sheeps.Num())
-	{
-		AllSheepsIn();
+		ShepherdIn();
 	}
 }
 
@@ -106,17 +97,8 @@ void ABaseWeel::ActorLeft(AActor* Actor)
 	{
 		NbSheepsInside--;
 	}
-
-	TArray<AActor*> SheepsBot;
-	TArray<AActor*> SheepsPlayer;
-	if (UWorld* World = GetWorld())
+	else if (Cast<AShepherdCharacter>(Actor))
 	{
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASheepBot::StaticClass(), SheepsBot);
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASheepCharacter::StaticClass(), SheepsPlayer);
-	}
-
-	if (NbSheepsInside == GameInstance->Sheeps.Num() - 1)
-	{
-		CancelAllSheepsIn();
+		CancelShepherdIn();
 	}
 }
