@@ -26,7 +26,7 @@ public:
 
 	// Elimination Parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Elimination Parameters")
-	float MaxDistanceToEarnScore = 3000.f;
+	float MaxDistanceToEarnScore = 1500.f;
 
 	// Cohesion Parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Cohesion Parameters")

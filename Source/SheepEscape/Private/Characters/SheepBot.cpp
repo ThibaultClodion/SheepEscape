@@ -33,8 +33,6 @@ void ASheepBot::Eliminate()
 {
 	if (IsEliminate()) return;
 
-	Super::Eliminate();
-
 	if (PushedBy)
 	{
 		PushedBy->AddEliminateSheepAction();
@@ -47,6 +45,7 @@ void ASheepBot::Eliminate()
 		}
 	}
 
+	Super::Eliminate();
 	GameInstance->SheepElimination(this);
 	Destroy();
 }

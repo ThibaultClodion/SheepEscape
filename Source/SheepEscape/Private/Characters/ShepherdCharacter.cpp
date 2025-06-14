@@ -44,10 +44,9 @@ void AShepherdCharacter::Eliminate()
 {
 	if (IsEliminate()) return;
 
-	Super::Eliminate();
-
 	if (PushedBy) PushedBy->AddEliminateShepherdAction();
 
+	Super::Eliminate();
 	GameInstance->ShepherdElimination();
 }
 

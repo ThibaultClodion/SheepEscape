@@ -24,10 +24,9 @@ void ASheepCharacter::Eliminate()
 {
 	if (IsEliminate()) return;
 
-	Super::Eliminate();
-
 	if (PushedBy) PushedBy->AddEliminateSheepAction();
 
+	Super::Eliminate();
 	GameInstance->SheepElimination(this);
 	GameInstance->RemoveScore(Cast<APlayerController>(Controller)->NetPlayerIndex);
 }
