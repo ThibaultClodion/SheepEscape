@@ -99,6 +99,7 @@ void ASheepBot::UpdateVelocity(float DeltaTime)
 	// Smooth Interpolation to target velocity
 	FVector TargetVelocity = ComputeVelocity();
 	Velocity = FMath::VInterpTo(Velocity, TargetVelocity, DeltaTime, SheepBotData->Acceleration);
+	Velocity *= SheepBotData->Inertia;
 
 	// If too slow -> slown down to 0
 	float velocityNormalize = NormalizeVelocity();

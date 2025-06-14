@@ -34,8 +34,12 @@ protected:
 
 private:
 	/** Attributes */
-	float WalkSpeed = 300.f;
-	float RunSpeed = 700.f;
+	UPROPERTY(EditDefaultsOnly, Category = Speed)
+	float WalkSpeed = 380.f;
+	UPROPERTY(EditDefaultsOnly, Category = Speed)
+	float RunSpeed = 800.f;
+	UPROPERTY(EditDefaultsOnly, Category = Speed)
+	float Acceleration = 2.f;
 
 	/** CrookHit */
 	void CrookHit();
@@ -58,12 +62,7 @@ private:
 	float Stamina = 1.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = Run)
-	float SpeedLerpFactor = 2.f;
-
+	float RunDuration = 4.f;
 	UPROPERTY(EditDefaultsOnly, Category = Run)
-	float LooseStaminaDuration = 4.f;
-	float LooseStaminaLerpFactor;
-	UPROPERTY(EditDefaultsOnly, Category = Run)
-	float RegainStaminaDuration = 6.f;
-	float RegainStaminaLerpFactor;
+	float RunRecoverDuration = 6.f;
 };

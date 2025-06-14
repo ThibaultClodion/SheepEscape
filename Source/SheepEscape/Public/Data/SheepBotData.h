@@ -19,14 +19,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Speed Parameters")
 	float Inertia = 0.995f;
 	UPROPERTY(EditDefaultsOnly, Category = "Speed Parameters")
-	float MinDecelerationVelocity = 0.25f;
+	float MinDecelerationVelocity = 0.4;
 	UPROPERTY(EditDefaultsOnly, Category = "Speed Parameters")
 	float MinVelocity = 0.1f;
 
 
 	// Elimination Parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Elimination Parameters")
-	float MaxDistanceToEarnScore = 1500.f;
+	float MaxDistanceToEarnScore = 800.f;
 
 	// Cohesion Parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Cohesion Parameters")
