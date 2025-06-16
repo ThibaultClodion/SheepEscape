@@ -198,7 +198,9 @@ FVector ASheepBot::Escape()
 
 		if (Distance <= SheepBotData->EscapeRadius)
 		{
-			return (GetActorLocation() - GameInstance->Shepherd->GetActorLocation()) / Distance;
+			// Apply squared distance falloff to make escape force lighter at greater distances
+			float DistanceFalloff = FMath::Square(CloseToShepherdNormalize(Distance));
+			return (ToShepherd / Distance) * DistanceFalloff;
 		}
 	}
 
@@ -212,7 +214,7 @@ void ASheepBot::EmotionalStateUpdate(float DeltaTime)
 	if (GameInstance->Shepherd && GameInstance->Shepherd->GetVelocity().Length() >= 5.f)
 	{
 		float DistanceToShepherd = (GetActorLocation() - GameInstance->Shepherd->GetActorLocation()).Length();
-		float ShepherdEmotionalState = CloseToShepherdNormalize(DistanceToShepherd) * 3.f;
+		float ShepherdEmotionalState = FMath::Min(CloseToShepherdNormalize(DistanceToShepherd) * 3.f, 0.5f);
 
 		if (ShepherdEmotionalState >= VelocityEmotionalState)
 		{

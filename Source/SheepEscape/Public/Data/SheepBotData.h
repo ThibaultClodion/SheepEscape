@@ -54,7 +54,7 @@ public:
 
 	// Escape Parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Escape Parameters")
-	float EscapeFactor = 50.f;
+	float EscapeFactor = 500.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Escape Parameters")
 	float EscapeRadius = 480.f;
 
