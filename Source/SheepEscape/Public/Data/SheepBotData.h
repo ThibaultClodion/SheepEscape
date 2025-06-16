@@ -32,7 +32,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Cohesion Parameters")
 	float CohesionFactor = 0.1f;
 	UPROPERTY(EditDefaultsOnly, Category = "Cohesion Parameters")
-	float CohesionStressFactor = 0.5f;
+	float CohesionStressFactor = 0.4f;
 	UPROPERTY(EditDefaultsOnly, Category = "Cohesion Parameters", meta = (ClampMin = "300.0", ClampMax = "700.0", UIMin = "300.0", UIMax = "700.0"))
 	float CohesionRadius = 500.f;
 
@@ -48,7 +48,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Alignment Parameters")
 	float AlignmentFactor = 0.2f;
 	UPROPERTY(EditDefaultsOnly, Category = "Alignment Parameters")
-	float AlignmentStressFactor = 0.15f;
+	float AlignmentStressFactor = 0.3f;
 	UPROPERTY(EditDefaultsOnly, Category = "Alignment Parameters", meta = (ClampMin = "100.0", ClampMax = "400.0", UIMin = "100.0", UIMax = "400.0"))
 	float AlignmentRadius = 300.f;
 
