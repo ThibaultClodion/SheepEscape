@@ -33,7 +33,7 @@ public:
 	float CohesionFactor = 0.1f;
 	UPROPERTY(EditDefaultsOnly, Category = "Cohesion Parameters")
 	float CohesionStressFactor = 0.4f;
-	UPROPERTY(EditDefaultsOnly, Category = "Cohesion Parameters", meta = (ClampMin = "300.0", ClampMax = "700.0", UIMin = "300.0", UIMax = "700.0"))
+	UPROPERTY(EditDefaultsOnly, Category = "Cohesion Parameters")
 	float CohesionRadius = 500.f;
 
 	// Separation Parameters
@@ -41,7 +41,7 @@ public:
 	float SeparationFactor = 0.4f;
 	UPROPERTY(EditDefaultsOnly, Category = "Separation Parameters")
 	float SeparationStressFactor = 0.05f;
-	UPROPERTY(EditDefaultsOnly, Category = "Separation Parameters", meta = (ClampMin = "150.0", ClampMax = "500.0", UIMin = "150.0", UIMax = "500.0"))
+	UPROPERTY(EditDefaultsOnly, Category = "Separation Parameters")
 	float SeparationRadius = 340.f;
 
 	// Alignment Parameters
@@ -49,14 +49,14 @@ public:
 	float AlignmentFactor = 0.2f;
 	UPROPERTY(EditDefaultsOnly, Category = "Alignment Parameters")
 	float AlignmentStressFactor = 0.3f;
-	UPROPERTY(EditDefaultsOnly, Category = "Alignment Parameters", meta = (ClampMin = "100.0", ClampMax = "400.0", UIMin = "100.0", UIMax = "400.0"))
+	UPROPERTY(EditDefaultsOnly, Category = "Alignment Parameters")
 	float AlignmentRadius = 300.f;
 
 	// Escape Parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Escape Parameters")
-	float EscapeFactor = 200.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Escape Parameters", meta = (ClampMin = "360.0", ClampMax = "480.0", UIMin = "360.0", UIMax = "480.0"))
-	float EscapeRadius = 420.f;
+	float EscapeFactor = 50.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Escape Parameters")
+	float EscapeRadius = 480.f;
 
 	// Emotional Parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Emotional Parameters")
