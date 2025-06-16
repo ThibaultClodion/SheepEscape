@@ -11,7 +11,6 @@
 AShepherdCharacter::AShepherdCharacter()
 {
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
-	GetCharacterMovement()->MinAnalogWalkSpeed = WalkSpeed / 2.5f;
 
 	SetupCrookHitTraces();
 }

@@ -190,7 +190,7 @@ FVector ASheepBot::Alignment()
 
 FVector ASheepBot::Escape()
 {
-	if (GameInstance->Shepherd && GameInstance->Shepherd->GetVelocity().Length() >= 5.f)
+	if (GameInstance->Shepherd)
 	{
 		FVector ToShepherd = GetActorLocation() - GameInstance->Shepherd->GetActorLocation();
 
@@ -211,7 +211,7 @@ void ASheepBot::EmotionalStateUpdate(float DeltaTime)
 {
 	float VelocityEmotionalState = NormalizeVelocity() / 2.f;
 
-	if (GameInstance->Shepherd && GameInstance->Shepherd->GetVelocity().Length() >= 5.f)
+	if (GameInstance->Shepherd)
 	{
 		float DistanceToShepherd = (GetActorLocation() - GameInstance->Shepherd->GetActorLocation()).Length();
 		float ShepherdEmotionalState = FMath::Min(CloseToShepherdNormalize(DistanceToShepherd) * 3.f, 0.5f);
