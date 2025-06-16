@@ -125,7 +125,7 @@ FVector ASheepBot::ComputeVelocity()
 		+ (SheepBotData->CohesionFactor + (SheepBotData->CohesionStressFactor - SheepBotData->CohesionFactor) * EmotionalState) * Cohesion()
 		+ (SheepBotData->SeparationFactor + (SheepBotData->SeparationStressFactor - SheepBotData->SeparationFactor) * EmotionalState) * Separation()
 		+ (SheepBotData->AlignmentFactor + (SheepBotData->AlignmentStressFactor - SheepBotData->AlignmentFactor) * EmotionalState) * Alignment()
-		+ SheepBotData->EscapeFactor * EmotionalState * Escape();
+		+ SheepBotData->EscapeFactor * Escape();
 }
 
 FVector ASheepBot::Cohesion()
@@ -190,7 +190,7 @@ FVector ASheepBot::Alignment()
 
 FVector ASheepBot::Escape()
 {
-	if (GameInstance->Shepherd && GameInstance->Shepherd->GetVelocity().Length() >= 5.f)
+	if (GameInstance->Shepherd)
 	{
 		FVector ToShepherd = GetActorLocation() - GameInstance->Shepherd->GetActorLocation();
 
@@ -207,24 +207,23 @@ FVector ASheepBot::Escape()
 
 void ASheepBot::EmotionalStateUpdate(float DeltaTime)
 {
-	/* Assign EmotionalState to 0.f if the shepherd is not in the EscapeRadius
-	* Assign EmotionalState to ~1.f if the shepherd is near the sheep */
+	float VelocityEmotionalState = NormalizeVelocity() / 2.f;
 
 	if (GameInstance->Shepherd && GameInstance->Shepherd->GetVelocity().Length() >= 5.f)
 	{
 		float DistanceToShepherd = (GetActorLocation() - GameInstance->Shepherd->GetActorLocation()).Length();
-		if (DistanceToShepherd <= SheepBotData->EscapeRadius)
+		float ShepherdEmotionalState = CloseToShepherdNormalize(DistanceToShepherd) * 3.f;
+
+		if (ShepherdEmotionalState >= VelocityEmotionalState)
 		{
-			float TargetEmotionalState = FMath::Clamp(CloseToShepherdNormalize(DistanceToShepherd) + NormalizeVelocity() / 2.f, 0, 1.f);
-			EmotionalState = FMath::Lerp(EmotionalState, CloseToShepherdNormalize(DistanceToShepherd), SheepBotData->EmotionalIncreaseFactor * DeltaTime);
+			EmotionalState = FMath::Lerp(EmotionalState, ShepherdEmotionalState, SheepBotData->EmotionalIncreaseFactor * DeltaTime);
 			return;
 		}
 	}
 
-	// If shepherd not close or not walking or not present
-	if ((Velocity / MaxSpeed).Length() >= SheepBotData->MinVelocity)
+	if (NormalizeVelocity() >= SheepBotData->MinVelocity)
 	{
-		EmotionalState = FMath::Lerp(EmotionalState, NormalizeVelocity() / 2.f, SheepBotData->EmotionalIncreaseFactor * DeltaTime);
+		EmotionalState = FMath::Lerp(EmotionalState, VelocityEmotionalState, SheepBotData->EmotionalIncreaseFactor * DeltaTime);
 	}
 	else
 	{
@@ -234,7 +233,7 @@ void ASheepBot::EmotionalStateUpdate(float DeltaTime)
 
 float ASheepBot::CloseToShepherdNormalize(float DistanceToShepherd)
 {
-	return DistanceToShepherd / SheepBotData->EscapeRadius;
+	return FMath::Clamp(1 - DistanceToShepherd / SheepBotData->EscapeRadius, 0.f, 1.f);
 }
 
 float ASheepBot::NormalizeVelocity()

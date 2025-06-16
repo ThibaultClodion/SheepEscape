@@ -63,6 +63,4 @@ public:
 	float EmotionalIncreaseFactor = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Emotional Parameters")
 	float EmotionalDecreaseFactor = 10.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Emotional Parameters", meta = (ClampMin = "0.5", ClampMax = "0.9", UIMin = "0.5", UIMax = "0.9"))
-	float EmotionalStateMultiplier = 0.7f;
 };
