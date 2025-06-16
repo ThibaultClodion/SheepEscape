@@ -190,7 +190,7 @@ FVector ASheepBot::Alignment()
 
 FVector ASheepBot::Escape()
 {
-	if (GameInstance->Shepherd)
+	if (GameInstance->Shepherd && GameInstance->Shepherd->GetVelocity().Length() >= 5.f)
 	{
 		FVector ToShepherd = GetActorLocation() - GameInstance->Shepherd->GetActorLocation();
 
