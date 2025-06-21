@@ -32,7 +32,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Cohesion Parameters")
 	float CohesionFactor = 0.1f;
 	UPROPERTY(EditDefaultsOnly, Category = "Cohesion Parameters")
-	float CohesionStressFactor = 0.4f;
+	float CohesionStressFactor = 0.35f;
 	UPROPERTY(EditDefaultsOnly, Category = "Cohesion Parameters")
 	float CohesionRadius = 500.f;
 
@@ -42,7 +42,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Separation Parameters")
 	float SeparationStressFactor = 0.05f;
 	UPROPERTY(EditDefaultsOnly, Category = "Separation Parameters")
-	float SeparationRadius = 340.f;
+	float SeparationRadius = 320.f;
 
 	// Alignment Parameters
 	UPROPERTY(EditDefaultsOnly, Category = "Alignment Parameters")
